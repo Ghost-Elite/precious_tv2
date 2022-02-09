@@ -7,6 +7,8 @@ class Services{
   var logger = Logger();
   var dataUrl;
   var uri;
+  var data ;
+
   Future<void> getall() async {
     try {
       var response = await http
@@ -21,7 +23,8 @@ class Services{
         //logger.w(listChannelsbygroup);
         dataUrl = jsonDecode(response.body);
         //fetchApi();
-        //logger.i('message 200',dataUrl);
+
+        logger.i('message 200',dataUrl);
         //fetchApi();
         //logger.i("guide url",dataUrl['results'][0]['gender']);
         // model= AlauneModel.fromJson(jsonDecode(response.body));
@@ -51,5 +54,17 @@ class Services{
     }catch(error, stacktrace){
 
     }
+  }
+  Future<List> getData() async {
+    final response = await http.get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/albayanetv/json"));
+    data = json.decode(response.body);
+    //this.videos.addAll(data["items"]);
+    //logger.i(data["items"]==null?0:data["items"].length);
+
+    //logger.i(data["items"][1]["snippet"]["title"]);
+   logger.i('fdghj',data["ACAN_API"]);
+
+
+    return data["ACAN_API"];
   }
 }

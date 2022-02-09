@@ -18,13 +18,13 @@ import 'configs/size_config.dart';
 Future main() async {
   //HttpOverrides.global = new MyHttpOverrides();
   Wakelock.enable();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
 
   ));
   runApp(
 
-      new LayoutBuilder(   // Add LayoutBuilder
+      LayoutBuilder(   // Add LayoutBuilder
           builder: (context, constraints) {
             return OrientationBuilder(   // Add OrientationBuilder
                 builder: (context, orientation) {
@@ -33,21 +33,21 @@ Future main() async {
                   return MaterialApp(
                     debugShowCheckedModeBanner: false,
                     title: '',
-                    localizationsDelegates: [GlobalMaterialLocalizations.delegate],
-                    supportedLocales: [
+                    localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
+                    supportedLocales: const [
                       //const Locale('en'),
-                      const Locale('fr')
+                      Locale('fr')
                     ],
-                    theme: new ThemeData(
+                    theme: ThemeData(
                       primaryColor: Colors.blue[800],
                       accentColor: Colors.blue,
                       // Define the default font family.
                       fontFamily: 'Poppins Light',
-                      pageTransitionsTheme: PageTransitionsTheme(builders: {
+                      pageTransitionsTheme: const PageTransitionsTheme(builders: {
                         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
                       }),
                     ),
-                    home: new SplashScreen(),
+                    home: SplashScreen(),
                   );
                 }
             );
