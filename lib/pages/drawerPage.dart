@@ -5,10 +5,12 @@ import '../configs/size_config.dart';
 import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'home.dart';
+import 'package:logger/logger.dart';
 
 class DrawerPage extends StatefulWidget {
-
-  DrawerPage({Key? key,}) : super(key: key);
+  var lien;
+  var logger = Logger();
+  DrawerPage({Key? key,this.lien,required this.logger}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -30,18 +32,40 @@ class _DrawerPageState extends State<DrawerPage> {
         ),
         child: ListView(
           children: [
-            DrawerHeader(child: null,
+            const DrawerHeader(child: null,
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             ListTile(
+              onTap: (){
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage(
+                    logger: widget.logger,
+                    lien: widget.lien,
 
+                  ),
+                  ),
+                      (Route<dynamic> route) => false,
+                );
+              },
               leading: IconButton(
                 icon: const FaIcon(
                   FontAwesomeIcons.tv,
                   size: 24,
                   color: ColorPalette.appColorWhite,
                 ),
-                onPressed: () { },
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage(
+                      logger: widget.logger,
+                      lien: widget.lien,
+
+                    ),
+                    ),
+                        (Route<dynamic> route) => false,
+                  );
+                },
               ),
               title:  Text(
                 "Live TV",
@@ -57,7 +81,18 @@ class _DrawerPageState extends State<DrawerPage> {
                     size: 17,
                     color: ColorPalette.appColorWhite
                 ),
-                onPressed: () { },
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage(
+                      logger: widget.logger,
+                      lien: widget.lien,
+
+                    ),
+                    ),
+                        (Route<dynamic> route) => false,
+                  );
+                },
               ),
             ),
             GestureDetector(
@@ -75,7 +110,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 },
                 ),
                 title:  Text(
-                  "Videos On Demand",
+                  "Replay TV",
                   style: GoogleFonts.roboto(
                       color: ColorPalette.appColorWhite,
                       fontWeight: FontWeight.bold,

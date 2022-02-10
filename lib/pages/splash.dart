@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     try {
 
       var response = await http
-          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/albayanetv/json"))
+          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/larts/json"))
           .timeout(const Duration(seconds: 10), onTimeout: () {
 
         throw TimeoutException("connection time out try agian");
@@ -130,8 +130,8 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   }
 
   startTime() async {
-    var _duration = new Duration(seconds: 5);
-    return new Timer(_duration, navigationPage);
+    var _duration = Duration(seconds: 5);
+    return Timer(_duration, navigationPage);
   }
   @override
   Widget build(BuildContext context) {
@@ -191,6 +191,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
         context,
         MaterialPageRoute(builder: (context) => HomePage(
           lien: uri, key: null,
+          logger:logger,
         ),
         ),
             (Route<dynamic> route) => false,

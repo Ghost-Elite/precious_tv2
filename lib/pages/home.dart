@@ -1,19 +1,24 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:precious_tv/network/yt_video.dart';
+import 'package:precious_tv/pages/preciousTvPage.dart';
 import 'package:precious_tv/services/serviceNetwork.dart';
 import 'package:better_player/better_player.dart';
 import 'package:precious_tv/utils/constants.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'drawerPage.dart';
+import 'package:logger/logger.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
   var lien;
-
-  HomePage({Key? key,this.lien}) : super(key: key);
+  var logger=Logger();
+  HomePage({Key? key,this.lien,required this.logger}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -21,141 +26,115 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   var scaffold = GlobalKey<ScaffoldState>();
-  Services s = new Services();
-  BetterPlayerController? betterPlayerController;
-
-  GlobalKey _betterPlayerKey = GlobalKey();
-  late final bool  videoLoading;
-  var data;
-  var datas;
   TabController? tabController;
-
-  late var betterPlayerConfiguration = BetterPlayerConfiguration(
-    autoPlay: true,
-    looping: false,
-    fullScreenByDefault: false,
-    allowedScreenSleep: false,
-    autoDetectFullscreenAspectRatio: true,
-    translations: [
-      BetterPlayerTranslations(
-        languageCode: "fr",
-        generalDefaultError: "Impossible de lire la vidéo",
-        generalNone: "Rien",
-        generalDefault: "Défaut",
-        generalRetry: "Réessayez",
-        playlistLoadingNextVideo: "Chargement de la vidéo suivante",
-        controlsNextVideoIn: "Vidéo suivante dans",
-        overflowMenuPlaybackSpeed: "Vitesse de lecture",
-        overflowMenuSubtitles: "Sous-titres",
-        overflowMenuQuality: "Qualité",
-        overflowMenuAudioTracks: "Audio",
-        qualityAuto: "Auto",
-      ),
-    ],
-    deviceOrientationsAfterFullScreen: [
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ],
-    //autoDispose: true,
-    controlsConfiguration: BetterPlayerControlsConfiguration(
-      iconsColor: Colors.cyan,
-      //controlBarColor: colorPrimary,
-      liveTextColor: Colors.red,
-      playIcon: Icons.play_arrow,
-      enablePip: true,
-      enableFullscreen: true,
-      enableSubtitles: false,
-      enablePlaybackSpeed: false,
-      loadingColor: Colors.cyan,
-      enableSkips: false,
-      overflowMenuIconsColor: Colors.cyan,
-
-      //overflowModalColor: Colors.amberAccent
-    ),
-  );
-  Future<void> getData() async {
-    final response = await http.get(Uri.parse(widget.lien['allitems'][0]['feed_url']));
-    data = json.decode(response.body);
-    getDirect(data['allitems'][0]['feed_url']);
-    return data;
-  }
-  Future<void> getDirect(String url) async {
-    final response = await http.get(Uri.parse(url));
-    if(response.statusCode == 200){
-      datas = json.decode(response.body);
-      setState(() {
-        datas;
-      });
-    }
-    PlayerInit(datas['direct_url']);
-  }
-  void PlayerInit(String url){
-    BetterPlayerDataSource dataSource = BetterPlayerDataSource(
-      BetterPlayerDataSourceType.network,
-      url,
-      liveStream: true,
-      notificationConfiguration: BetterPlayerNotificationConfiguration(
-        showNotification: true,
-        title: "Elephant dream",
-        author: "Some author",
-        imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/1200px-African_Bush_Elephant.jpg",
-      ),
+  bool? _isConnected;
+  Future<void> test() async {
+    // Simple check to see if we have Internet
+    // ignore: avoid_print
+    widget.logger.i('''The statement 'this machine is connected to the Internet' is: ''');
+    final bool isConnected = await InternetConnectionChecker().hasConnection;
+    // ignore: avoid_print
+    widget.logger.i(
+      isConnected.toString(),
     );
-    //betterPlayerController.setupDataSource(dataSource);
-    betterPlayerController?.setBetterPlayerGlobalKey(_betterPlayerKey);
-    betterPlayerController!.setupDataSource(dataSource)
-        .then((response) {
-     s.logger.i(' Ghost-Elite ',dataSource);
-      videoLoading = false;
-    })
-        .catchError((error) async {
-      // Source did not load, url might be invalid
-      inspect(error);
-    });
-  }
+    // returns a bool
 
+    // We can also get an enum instead of a bool
+    // ignore: avoid_print
+    widget.logger.i(
+        'Current status: ${await InternetConnectionChecker().connectionStatus}');
+    // Prints either InternetConnectionStatus.connected
+    // or InternetConnectionStatus.disconnected
+
+    // actively listen for status updates
+    final StreamSubscription<InternetConnectionStatus> listener =
+    InternetConnectionChecker().onStatusChange.listen(
+          (InternetConnectionStatus status) {
+        switch (status) {
+          case InternetConnectionStatus.connected:
+          // ignore: avoid_print
+            widget.logger.i('Data connection is available.');
+            break;
+          case InternetConnectionStatus.disconnected:
+          // ignore: avoid_print
+            widget.logger.i('You are disconnected from the internet.');
+            break;
+        }
+      },
+    );
+
+    // close listener after 30 seconds, so the program doesn't run forever
+    await Future<void>.delayed(
+        const Duration(seconds: 10)
+    );
+    await listener.cancel();
+  }
+  /*Future<void> _checkInternetConnection() async {
+    try {
+      final response = await InternetAddress.lookup('www.google.com');
+      if (response.isNotEmpty) {
+        setState(() {
+          _isConnected = true;
+        });
+      }
+    } on SocketException catch (err) {
+      setState(() {
+        _isConnected = false;
+      });
+      print(err);
+    }
+  }*/
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getData();
-    betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+    //_checkInternetConnection();
+    test();
   }
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    betterPlayerController?.dispose();
+
+
   }
 
   @override
   Widget build(BuildContext context) {
+    //widget.logger.i(' Ghost-Elite ',_isConnected == true ? 'Connected' : 'Not Connected',);
     tabController = TabController(length: 3, vsync: this);
 
+
     var tabBarItem = TabBar(
-      indicator: BoxDecoration(
-        borderRadius: BorderRadius.circular(50), // Creates border
+      labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
+      labelColor: ColorPalette.appBarColor,
+      unselectedLabelColor: ColorPalette.appYellowColor,
+      padding: const EdgeInsets.only(top: 10),
+      indicator: const BoxDecoration(
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)), // Creates border
         color: ColorPalette.appYellowColor),
       tabs: const [
         Tab(
-          icon: Icon(Icons.list),
+          text: 'Precious TV',
         ),
         Tab(
-          icon: Icon(Icons.grid_on,color: Colors.pink,),
+          text: 'Replay TV',
         ),
         Tab(
-          icon: Icon(Icons.grid_on,color: Colors.pink,),
+          text: 'YouTube',
         ),
       ],
       controller: tabController,
-      indicatorColor: ColorPalette.appColorBg,
+      //indicatorColor: ColorPalette.appColorBg,
     );
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         key: scaffold,
-        drawer: DrawerPage(),
+        drawer: DrawerPage(
+          lien: widget.lien,
+          logger: widget.logger,
+        ),
         appBar: AppBar(
           backgroundColor: ColorPalette.appBarColor,
           centerTitle: true,
@@ -187,7 +166,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         body: TabBarView(
           controller: tabController,
           children: [
-            listItem,
+            PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],),
             listItem,
             listItem
 
@@ -239,6 +218,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       ),
     )*/;
   }
+
   var listItem = ListView.builder(
     itemCount: 20,
     itemBuilder: (BuildContext context, int index) {
