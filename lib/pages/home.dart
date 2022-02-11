@@ -1,24 +1,21 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:precious_tv/network/yt_video.dart';
 import 'package:precious_tv/pages/preciousTvPage.dart';
-import 'package:precious_tv/services/serviceNetwork.dart';
-import 'package:better_player/better_player.dart';
 import 'package:precious_tv/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'drawerPage.dart';
 import 'package:logger/logger.dart';
+import 'package:youtube_api/youtube_api.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
   var lien;
   var logger=Logger();
-  HomePage({Key? key,this.lien,required this.logger}) : super(key: key);
+  YoutubeAPI? ytApi;
+  YoutubeAPI? ytApiPlaylist;
+  List<YT_API> ytResult = [];
+  List<YT_APIPlaylist> ytResultPlaylist = [];
+  HomePage({Key? key,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -69,27 +66,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     );
     await listener.cancel();
   }
-  /*Future<void> _checkInternetConnection() async {
-    try {
-      final response = await InternetAddress.lookup('www.google.com');
-      if (response.isNotEmpty) {
-        setState(() {
-          _isConnected = true;
-        });
-      }
-    } on SocketException catch (err) {
-      setState(() {
-        _isConnected = false;
-      });
-      print(err);
-    }
-  }*/
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     //_checkInternetConnection();
     test();
+    //widget.logger.i(' ghost-elite 221 ',widget.ytResult[0].title);
   }
   @override
   void dispose() {
@@ -101,10 +86,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    //widget.logger.i(' Ghost-Elite ',_isConnected == true ? 'Connected' : 'Not Connected',);
+    //widget.logger.i(' Ghost-Elite ',_isConnected == true ? 'Connected' : 'Not Connected',)
     tabController = TabController(length: 3, vsync: this);
-
-
     var tabBarItem = TabBar(
       labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
       labelColor: ColorPalette.appBarColor,
@@ -132,6 +115,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       child: Scaffold(
         key: scaffold,
         drawer: DrawerPage(
+          ytResult: widget.ytResult,
+          ytResultPlaylist: widget.ytResultPlaylist,
+          ytApi: widget.ytApi,
+          ytApiPlaylist: widget.ytApiPlaylist,
           lien: widget.lien,
           logger: widget.logger,
         ),
@@ -166,7 +153,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         body: TabBarView(
           controller: tabController,
           children: [
-            PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],),
+            PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist),
             listItem,
             listItem
 

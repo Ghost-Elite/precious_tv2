@@ -11,11 +11,16 @@ import 'package:http/http.dart' as http;
 import 'package:precious_tv/configs/size_config.dart';
 import 'package:precious_tv/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:youtube_api/youtube_api.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class PreciousTvPage extends StatefulWidget {
   var dataUrl;
-  PreciousTvPage({Key? key,this.dataUrl}) : super(key: key);
+  YoutubeAPI? ytApi;
+  YoutubeAPI? ytApiPlaylist;
+  List<YT_API> ytResult = [];
+  List<YT_APIPlaylist> ytResultPlaylist = [];
+  PreciousTvPage({Key? key,this.dataUrl,this.ytApiPlaylist,required this.ytResultPlaylist,required this.ytResult,this.ytApi}) : super(key: key);
 
   @override
   _PreciousTvPageState createState() => _PreciousTvPageState();
@@ -74,6 +79,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     final response = await http.get(Uri.parse(widget.dataUrl));
     data = json.decode(response.body);
     getDirect(data['allitems'][0]['feed_url']);
+    logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
     return data;
   }
   Future<void> getDirect(String url) async {
@@ -172,6 +178,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: ColorPalette.appColorDivider,
       body: Column(
@@ -216,7 +223,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                 child: Text(
                   'Latest Videos',
                   style: GoogleFonts.roboto(
-                      fontSize: 16,
+                      fontSize: 13,
                       color: ColorPalette.appBarColor,
                       fontWeight: FontWeight.bold),
                 ),
@@ -224,14 +231,14 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
               IconButton(
                 icon: const Icon(
                   Icons.playlist_add,
-                  size: 30,
+                  size: 25,
                   color: ColorPalette.appBarColor,
                 ),
                 onPressed: () {},
               )
             ],
           ),
-          Expanded(child: listItem),
+          //Expanded(child: list()),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -239,7 +246,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                 child: Text(
                   'TV Programs',
                   style: GoogleFonts.roboto(
-                      fontSize: 16,
+                      fontSize: 13,
                       color: ColorPalette.appBarColor,
                       fontWeight: FontWeight.bold),
                 ),
@@ -247,7 +254,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
               IconButton(
                 icon: const Icon(
                   Icons.playlist_add,
-                  size: 30,
+                  size: 25,
                   color: ColorPalette.appBarColor,
                 ),
                 onPressed: () {},
@@ -274,5 +281,23 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       );
     },
   );
+  Widget list(){
+    return ListView.builder(
+      itemCount: widget.ytResult.length>2?2:widget.ytResult.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 1,bottom: 1),
+          child: Container(
+            width: SizeConfi.screenWidth,
+            height: 70,
+            color: ColorPalette.appColorBg,
+            child: Center(
+              child: Text(' Ghost-Elite${widget.ytResult[index].title} '),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 

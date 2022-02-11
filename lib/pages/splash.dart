@@ -4,8 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:precious_tv/network/youtube_api.dart';
-import 'package:precious_tv/network/yt_video.dart';
+import 'package:youtube_api/youtube_api.dart';
 
 import 'package:precious_tv/pages/home.dart';
 import 'package:precious_tv/services/serviceNetwork.dart';
@@ -34,32 +33,13 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  bool isLoading = false;
+  bool isLoadingPlaylist = true;
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
   String API_CHANEL = 'UCIby2pzNJkvQsbc38shuGTw';
+  bool isLoading = false;
 
-  Future<void> callAPI() async {
-    print('UI callled');
-    //await Jiffy.locale("fr");
-    ytResult = await ytApi!.channel(API_CHANEL);
-    setState(() {
-      print('UI Updated');
-      isLoading = false;
-      callAPIPlaylist();
-    });
-  }
-  Future<void> callAPIPlaylist() async {
-    print('UI callled');
-    //await Jiffy.locale("fr");
-    ytResultPlaylist = await ytApiPlaylist!.playlist(API_CHANEL);
-    setState(() {
-      print('UI Updated');
-      print(ytResultPlaylist[0].title);
-      isLoadingPlaylist = false;
-    });
-  }
 
-  bool isLoadingPlaylist = true;
+
 
   Future<void>cheked()async {
     getall();
@@ -85,9 +65,9 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
           dataUrl = jsonDecode(response.body);
         });
         fetchApi();
+        callAPI(dataUrl['ACAN_API'][0]['app_youtube_uid']);
 
-
-        //logger.i("guide url",dataUrl['results'][0]['gender']);
+        logger.i("guide url",dataUrl['ACAN_API'][0]['app_youtube_uid']);
         // model= AlauneModel.fromJson(jsonDecode(response.body));
       } else {
         return null;
@@ -116,21 +96,44 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
 
     }
   }
-
+  Future<void> callAPI(String url) async {
+    print('UI callled');
+    //await Jiffy.locale("fr");
+    ytResult = await ytApi!.channel(url);
+    //logger.i(' Ghost-Elite ',ytResult[5].thumbnail['medium']['url']);
+    setState(() {
+      print('UI Updated');
+      isLoading = false;
+      callAPIPlaylist(dataUrl['ACAN_API'][0]['app_google_apikey']);
+    });
+  }
+  Future<void> callAPIPlaylist(String url) async {
+    print('UI callled');
+    //await Jiffy.locale("fr");
+    ytResultPlaylist = await ytApiPlaylist!.playlist(url);
+    setState(() {
+      print('UI Updated');
+      print(ytResultPlaylist[0].title);
+      isLoadingPlaylist = false;
+    });
+  }
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    ytApi = new YoutubeAPI(API_Key, maxResults: 50, type: "video");
+    ytApiPlaylist =
+    new YoutubeAPI(API_Key, maxResults: 50, type: "playlist");
     getall();
-    callAPI();
+
     //logger.i('message ghost',ytResult[0].title);
     startTime();
   }
 
   startTime() async {
-    var _duration = Duration(seconds: 5);
+    var _duration = const Duration(seconds: 5);
     return Timer(_duration, navigationPage);
   }
   @override
@@ -187,11 +190,15 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   }
   Future<void> navigationPage()async {
     if(dataUrl !=null && dataUrl!=0){
+      logger.i(' ghost-elite ',ytResult[0].id);
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => HomePage(
-          lien: uri, key: null,
+          lien: uri,
           logger:logger,
+          ytApi: ytApi,
+          ytResult: ytResult,
+          ytResultPlaylist: ytResultPlaylist,
         ),
         ),
             (Route<dynamic> route) => false,

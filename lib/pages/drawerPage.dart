@@ -6,11 +6,15 @@ import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'home.dart';
 import 'package:logger/logger.dart';
-
+import 'package:youtube_api/youtube_api.dart';
 class DrawerPage extends StatefulWidget {
   var lien;
   var logger = Logger();
-  DrawerPage({Key? key,this.lien,required this.logger}) : super(key: key);
+  YoutubeAPI? ytApi;
+  YoutubeAPI? ytApiPlaylist;
+  List<YT_API> ytResult = [];
+  List<YT_APIPlaylist> ytResultPlaylist = [];
+  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -40,6 +44,10 @@ class _DrawerPageState extends State<DrawerPage> {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => HomePage(
+                    ytResult: widget.ytResult,
+                    ytResultPlaylist: widget.ytResultPlaylist,
+                    ytApiPlaylist: widget.ytApiPlaylist,
+                    ytApi: widget.ytApi,
                     logger: widget.logger,
                     lien: widget.lien,
 
@@ -58,6 +66,10 @@ class _DrawerPageState extends State<DrawerPage> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => HomePage(
+                      ytResult: widget.ytResult,
+                      ytResultPlaylist: widget.ytResultPlaylist,
+                      ytApiPlaylist: widget.ytApiPlaylist,
+                      ytApi: widget.ytApi,
                       logger: widget.logger,
                       lien: widget.lien,
 
@@ -85,6 +97,10 @@ class _DrawerPageState extends State<DrawerPage> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => HomePage(
+                      ytResult: widget.ytResult,
+                      ytResultPlaylist: widget.ytResultPlaylist,
+                      ytApiPlaylist: widget.ytApiPlaylist,
+                      ytApi: widget.ytApi,
                       logger: widget.logger,
                       lien: widget.lien,
 
