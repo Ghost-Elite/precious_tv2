@@ -5,6 +5,7 @@ class Assets {
   static const String imagesCarreImage = 'assets/images/carreImage.png';
   static const String imagesDrawer = 'assets/images/drawer.png';
   static const String imagesMenu = 'assets/images/menu.png';
+  static const String imagesPlay = 'assets/images/play.png';
   static const String imagesReactHeader = 'assets/images/reactHeader.png';
   static const String imagesRectImage = 'assets/images/rectImage.png';
   static const String imagesSplashScreen = 'assets/images/SplashScreen.png';

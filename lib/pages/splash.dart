@@ -45,7 +45,6 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     getall();
     logger.i('message 200');
   }
-
   Future<void> getall() async {
 
     try {
@@ -65,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
           dataUrl = jsonDecode(response.body);
         });
         fetchApi();
-        callAPI(dataUrl['ACAN_API'][0]['app_youtube_uid']);
+
 
         logger.i("guide url",dataUrl['ACAN_API'][0]['app_youtube_uid']);
         // model= AlauneModel.fromJson(jsonDecode(response.body));
@@ -96,21 +95,22 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
 
     }
   }
-  Future<void> callAPI(String url) async {
+  Future<void> callAPI() async {
     print('UI callled');
     //await Jiffy.locale("fr");
-    ytResult = await ytApi!.channel(url);
+    ytResult = await ytApi!.channel(API_CHANEL);
+
     //logger.i(' Ghost-Elite ',ytResult[5].thumbnail['medium']['url']);
     setState(() {
       print('UI Updated');
       isLoading = false;
-      callAPIPlaylist(dataUrl['ACAN_API'][0]['app_google_apikey']);
+      callAPIPlaylist();
     });
   }
-  Future<void> callAPIPlaylist(String url) async {
+  Future<void> callAPIPlaylist() async {
     print('UI callled');
     //await Jiffy.locale("fr");
-    ytResultPlaylist = await ytApiPlaylist!.playlist(url);
+    ytResultPlaylist = await ytApiPlaylist!.playlist(API_CHANEL);
     setState(() {
       print('UI Updated');
       print(ytResultPlaylist[0].title);
@@ -123,11 +123,11 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   void initState() {
     // TODO: implement initState
     super.initState();
-    ytApi = new YoutubeAPI(API_Key, maxResults: 50, type: "video");
-    ytApiPlaylist =
-    new YoutubeAPI(API_Key, maxResults: 50, type: "playlist");
+    ytApi = YoutubeAPI(API_Key, maxResults: 50, type: "video");
+    ytApiPlaylist = YoutubeAPI(API_Key, maxResults: 50, type: "playlist");
     getall();
-
+    callAPI();
+    callAPIPlaylist();
     //logger.i('message ghost',ytResult[0].title);
     startTime();
   }
@@ -191,6 +191,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   Future<void> navigationPage()async {
     if(dataUrl !=null && dataUrl!=0){
       logger.i(' ghost-elite ',ytResult[0].id);
+      logger.i(' ghost-elite ',ytResultPlaylist[0].id);
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => HomePage(
@@ -204,7 +205,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
             (Route<dynamic> route) => false,
       );
     }else{
-     _services.logger.i(' ghost-elite 2022 ');
+     logger.i(' ghost-elite 2022 ');
     }
 
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:precious_tv/pages/replayPage.dart';
 import '../configs/size_config.dart';
 import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'drawerReplay.dart';
 import 'home.dart';
 import 'package:logger/logger.dart';
 import 'package:youtube_api/youtube_api.dart';
@@ -113,7 +115,15 @@ class _DrawerPageState extends State<DrawerPage> {
             ),
             GestureDetector(
               onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DrawerReplay(
+                    ytResultPlaylist: widget.ytResultPlaylist,
 
+                  ),
+                  ),
+
+                );
               },
               child: ListTile(
                 leading: IconButton(

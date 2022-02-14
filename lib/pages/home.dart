@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:precious_tv/pages/preciousTvPage.dart';
+import 'package:precious_tv/pages/replayPage.dart';
 import 'package:precious_tv/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'drawerPage.dart';
@@ -87,6 +88,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     //widget.logger.i(' Ghost-Elite ',_isConnected == true ? 'Connected' : 'Not Connected',)
+
     tabController = TabController(length: 3, vsync: this);
     var tabBarItem = TabBar(
       labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
@@ -154,7 +156,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           controller: tabController,
           children: [
             PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist),
-            listItem,
+            ReplayPage(ytResultPlaylist: widget.ytResultPlaylist,),
             listItem
 
           ],
