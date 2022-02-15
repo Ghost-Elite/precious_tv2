@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:precious_tv/pages/replayPage.dart';
+import 'package:precious_tv/pages/youtubeVideoPlaylist.dart';
 import '../configs/size_config.dart';
 import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,7 +17,8 @@ class DrawerPage extends StatefulWidget {
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult}) : super(key: key);
+  YT_APIPlaylist? ytResults;
+  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -156,7 +158,17 @@ class _DrawerPageState extends State<DrawerPage> {
               ),
             ),
             ListTile(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => YoutubeVideoPlayList(
 
+
+                  ),
+                  ),
+
+                );
+              },
               leading: IconButton(
                 icon: const FaIcon(
                   FontAwesomeIcons.youtube,

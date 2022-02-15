@@ -320,11 +320,11 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                           placeholder: (context, url) =>
                               Image.asset(
                                 "assets/images/vignete.png",
-                                width: 100,height: 70,
+                                width: 100,height: 70,fit: BoxFit.cover,
                               ),
                           errorWidget: (context, url, error) =>
                               Image.asset(
-                                "assets/images/vignete.png",width: 100,height: 70,
+                                "assets/images/vignete.png",width: 100,height: 70,fit: BoxFit.cover,
                               ),
                         ),
                       ),
@@ -428,7 +428,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                           Container(
                             height: 100,
                             width: 140,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               image: DecorationImage(
                                 image: AssetImage('assets/images/rectImage.png'),
                                 fit: BoxFit.cover

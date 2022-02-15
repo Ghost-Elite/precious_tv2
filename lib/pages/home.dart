@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:precious_tv/pages/preciousTvPage.dart';
 import 'package:precious_tv/pages/replayPage.dart';
+import 'package:precious_tv/pages/youtube_page.dart';
 import 'package:precious_tv/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'drawerPage.dart';
@@ -24,6 +25,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   var scaffold = GlobalKey<ScaffoldState>();
+  final List<GlobalObjectKey<FormState>> formKeyList = List.generate(10, (index) => GlobalObjectKey<FormState>(index));
   TabController? tabController;
   bool? _isConnected;
   Future<void> test() async {
@@ -157,7 +159,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           children: [
             PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist),
             ReplayPage(ytResultPlaylist: widget.ytResultPlaylist,),
-            listItem
+            YoutubePages(ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist,)
 
           ],
         ),

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:logger/logger.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../utils/constants.dart';
 class ReplayPage extends StatefulWidget {
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  ReplayPage({Key? key,required this.ytResultPlaylist}) : super(key: key);
+  YT_APIPlaylist? ytResult;
+  ReplayPage({Key? key,required this.ytResultPlaylist,this.ytResult}) : super(key: key);
 
   @override
   _ReplayPageState createState() => _ReplayPageState();
@@ -18,17 +20,33 @@ class _ReplayPageState extends State<ReplayPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   GlobalKey<RefreshIndicatorState>();
   var logger =Logger();
+  var data;
+  Future<List> getData() async {
+    final response = await http.get(Uri.parse("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId="+widget.ytResult!.id+"&maxResults=10&key=AIzaSyC3Oj2o7fWNXEGcGIkiqVQPTRPVnzI43Wo"));
+    data = json.decode(response.body);
+    //this.videos.addAll(data["items"]);
+    //logger.i(data["items"]==null?0:data["items"].length);
+
+    logger.i(' ghost-elite 2022 ',data["items"][1]["snippet"]["title"]);
+    //logger.i(data["items"]);
+
+    setState(() {
+    });
+
+    return data["items"];
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) => _refreshIndicatorKey.currentState?.show());
+    getData();
   }
 
   @override
   Widget build(BuildContext context) {
-  logger.i(' ghost-elite 14 ',widget.ytResultPlaylist[0].id);
+
     return Scaffold(
       body: makeItemEmissions(),
     );
@@ -61,12 +79,12 @@ class _ReplayPageState extends State<ReplayPage> {
                             imageUrl: widget.ytResultPlaylist[position].thumbnail['high']['url'],
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Image.asset(
-                              "assets/images/malikiaError.png",
-                              fit: BoxFit.contain,
+                              "assets/images/vignete.png",
+                              fit: BoxFit.cover,
                             ),
                             errorWidget: (context, url, error) => Image.asset(
-                              "assets/images/malikiaError.png",
-                              fit: BoxFit.contain,
+                              "assets/images/vignete.png",
+                              fit: BoxFit.cover,
                             ),
                           ),
                           width: MediaQuery.of(context).size.width,
@@ -77,7 +95,7 @@ class _ReplayPageState extends State<ReplayPage> {
                         width: MediaQuery.of(context).size.width,
                         height: 150,
                         decoration:  BoxDecoration(
-                          image: DecorationImage(
+                          image: const DecorationImage(
                             image: AssetImage('assets/images/carreImage.png'),
                             fit: BoxFit.cover,
                           ),
@@ -89,7 +107,7 @@ class _ReplayPageState extends State<ReplayPage> {
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: ColorPalette.appColorWhite,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -108,3 +126,4 @@ class _ReplayPageState extends State<ReplayPage> {
     );
   }
 }
+
