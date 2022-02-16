@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:precious_tv/pages/preciousTvPage.dart';
 import 'package:precious_tv/pages/replayPage.dart';
 import 'package:precious_tv/pages/youtube_page.dart';
@@ -23,9 +24,11 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin{
+  @override
+  bool get wantKeepAlive => true;
   var scaffold = GlobalKey<ScaffoldState>();
-  final List<GlobalObjectKey<FormState>> formKeyList = List.generate(10, (index) => GlobalObjectKey<FormState>(index));
+  GlobalKey<FormState> _productKey = GlobalKey<FormState>();
   TabController? tabController;
   bool? _isConnected;
   Future<void> test() async {
@@ -78,20 +81,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     //_checkInternetConnection();
     test();
     //widget.logger.i(' ghost-elite 221 ',widget.ytResult[0].title);
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      tabController = TabController(length: 3, vsync: this);
+    });
+   /* Future.delayed(Duration(seconds: 0), (){
+      tabController = TabController(length: 3, vsync: this);
+    });*/
+
   }
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-
-
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+    super.dispose();
+  }
+  @override
+  void updateKeepAlive() {
+    // TODO: implement updateKeepAlive
+    super.updateKeepAlive();
   }
 
   @override
   Widget build(BuildContext context) {
     //widget.logger.i(' Ghost-Elite ',_isConnected == true ? 'Connected' : 'Not Connected',)
+    //WidgetsBinding.instance?.addPostFrameCallback((_) => executeAfterWholeBuildProcess());
 
-    tabController = TabController(length: 3, vsync: this);
     var tabBarItem = TabBar(
       labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
       labelColor: ColorPalette.appBarColor,
@@ -115,7 +132,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       //indicatorColor: ColorPalette.appColorBg,
     );
     return DefaultTabController(
-      length: 2,
+
+      //length: 3,
+      length: 3,
       child: Scaffold(
         key: scaffold,
         drawer: DrawerPage(
@@ -156,6 +175,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         ),
         body: TabBarView(
           controller: tabController,
+          
           children: [
             PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist),
             ReplayPage(ytResultPlaylist: widget.ytResultPlaylist,),
@@ -210,21 +230,64 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     )*/;
   }
 
-  var listItem = ListView.builder(
-    itemCount: 20,
-    itemBuilder: (BuildContext context, int index) {
-      return ListTile(
-        title: Card(
-          elevation: 5.0,
-          child: Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-            child: Text("ListItem $index"),
-          ),
+  var listItem = CustomScrollView(
+    slivers: <Widget>[
+      /*SliverGrid(
+        delegate: SliverChildBuilderDelegate(
+              (context, index) {
+            return Container(
+              alignment: Alignment.center,
+              color: Colors.orange[100 * (index % 20)],
+              child: Text('grid item $index'),
+            );
+          },
+          childCount: 30,
         ),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 1,
+          mainAxisSpacing: 15,
+          crossAxisSpacing: 15,
+          childAspectRatio: 1.0,
+        ),
+      ),*/
+      SliverToBoxAdapter(
+        child: Column(
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              color: Colors.green,
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: 100,
+              height: 100,
+              color: Colors.green,
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: 100,
+              height: 300,
+              color: Colors.green,
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: 100,
+              height: 300,
+              color: Colors.cyan,
+            ),
+            SizedBox(height: 100,),
+            Container(
+              width: 100,
+              height: 300,
+              color: Colors.pink,
+            ),
 
-      );
-    },
+          ],
+        ),
+      )
+
+    ],
   );
 }
 

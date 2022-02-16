@@ -28,10 +28,14 @@ class PreciousTvPage extends StatefulWidget {
 }
 
 class _PreciousTvPageState extends State<PreciousTvPage> {
+  @override
+
   var logger =Logger();
   GlobalKey _betterPlayerKey = GlobalKey();
+  GlobalKey _scaffoldKey = GlobalKey();
   BetterPlayerController? betterPlayerController;
   late final bool  videoLoading;
+  AnimationController? animationController;
   var data;
   var datas;
   late var betterPlayerConfiguration = BetterPlayerConfiguration(
@@ -169,20 +173,128 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     //logger.i('message',datas['direct_url']);
     test();
     betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+
   }
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    betterPlayerController?.dispose();
+    betterPlayerController!.dispose();
+    betterPlayerController ==null;
 
+  }
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    betterPlayerController!.dispose();
+    betterPlayerController ==null;
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: ColorPalette.appColorWhite,
       body: SafeArea(
-        child: Column(
+        child:  CustomScrollView(
+          slivers: <Widget>[
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(top: 5),
+                    width: SizeConfi.screenWidth,
+                    height: 180,
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      key: _betterPlayerKey,
+                      child: BetterPlayer(controller: betterPlayerController!),
+                    ),
+                  ),
+                  Container(
+                    width: SizeConfi.screenWidth,
+                    height: SizeConfi.screenHeight! / 20,
+                    decoration: const BoxDecoration(
+                        color: ColorPalette.appBarColor,
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16),bottomRight: Radius.circular(16))
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.only(left: 45),
+                      alignment: Alignment.center,
+                      child: Row(
+                        children: [
+                          IconButton(onPressed: (){
+
+                          },
+                              icon: const Icon(
+                                Icons.tv,size: 26,color: ColorPalette.appYellowColor,
+                              )
+                          ),
+                          Text('You’re watching Precious TV ',style: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold,color: ColorPalette.appYellowColor),),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(right: 5,left: 5),
+                        child: Text(
+                          'Latest Videos',
+                          style: GoogleFonts.roboto(
+                              fontSize: 13,
+                              color: ColorPalette.appBarColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.playlist_add,
+                          size: 20,
+                          color: ColorPalette.appBarColor,
+                        ),
+                        onPressed: () {},
+                      )
+                    ],
+                  ),
+                  Container(
+                      width: SizeConfi.screenWidth,
+                      height: 200,
+                      child: listVideos()),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(right: 5,left: 5),
+                        child: Text(
+                          'TV Programs',
+                          style: GoogleFonts.roboto(
+                              fontSize: 13,
+                              color: ColorPalette.appBarColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.playlist_add,
+                          size: 20,
+                          color: ColorPalette.appBarColor,
+                        ),
+                        onPressed: () {},
+                      )
+                    ],
+                  ),
+                  makeMostPopular()
+
+                ],
+              ),
+            )
+
+          ],
+        )
+
+        /*Column(
           children: [
             Container(
               padding: EdgeInsets.only(top: 5),
@@ -270,25 +382,50 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
             ),
             makeMostPopular()
           ],
-        ),
+        )*/ ,
       ),
     );
   }
-  var listItem = ListView.builder(
-    itemCount: 3,
-    itemBuilder: (BuildContext context, int index) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 1,bottom: 1),
-        child: Container(
-          width: SizeConfi.screenWidth,
-          height: 70,
-          color: ColorPalette.appColorBg,
-          child: Center(
-            child: Text('$index Ghost-Elite '),
-          ),
+  var listItem = CustomScrollView(
+    slivers: <Widget>[
+      SliverToBoxAdapter(
+        child: Column(
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              color: Colors.green,
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: 100,
+              height: 100,
+              color: Colors.green,
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: 100,
+              height: 300,
+              color: Colors.green,
+            ),
+            SizedBox(height: 20,),
+            Container(
+              width: 100,
+              height: 300,
+              color: Colors.cyan,
+            ),
+            SizedBox(height: 100,),
+            Container(
+              width: 100,
+              height: 300,
+              color: Colors.pink,
+            ),
+
+          ],
         ),
-      );
-    },
+      )
+
+    ],
   );
   Widget listVideos(){
     return ListView.builder(
@@ -390,14 +527,14 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     return Container(
       //margin: const EdgeInsets.symmetric(horizontal: 10.2),
       //margin: EdgeInsets.symmetric(vertical: 8.0),
-        height: 100,
+        height: 200,
         child: ListView.builder(
             itemCount: widget.ytResultPlaylist.length,
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             itemBuilder: (_, i) {
               return SizedBox(
-                height: 100,
+                height: 160,
                 width: 140,
                 //margin: const EdgeInsets.only(left: 6,  top: 10, bottom: 6),
                 child: Column(
@@ -409,7 +546,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                         alignment: Alignment.bottomCenter,
                         children: [
                           SizedBox(
-                            height: 100,
+                            height: 160,
                             width: 140,
                             child: GestureDetector(
                               child: Container(
@@ -426,7 +563,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                             ),
                           ),
                           Container(
-                            height: 100,
+                            height: 160,
                             width: 140,
                             decoration: const BoxDecoration(
                               image: DecorationImage(
