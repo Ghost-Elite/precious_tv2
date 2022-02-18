@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'drawerPage.dart';
 import 'package:logger/logger.dart';
 import 'package:youtube_api/youtube_api.dart';
+import 'package:better_player/better_player.dart';
+import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
   var lien;
@@ -27,8 +29,55 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin{
   @override
   bool get wantKeepAlive => true;
+  GlobalKey _betterPlayerKey = GlobalKey();
+  GlobalKey _scaffoldKey = GlobalKey();
+  BetterPlayerController? betterPlayerController;
+  late var betterPlayerConfiguration = BetterPlayerConfiguration(
+    autoPlay: true,
+    looping: false,
+    fullScreenByDefault: false,
+    allowedScreenSleep: false,
+    autoDetectFullscreenAspectRatio: true,
+    translations: [
+      BetterPlayerTranslations(
+        languageCode: "fr",
+        generalDefaultError: "Impossible de lire la vidéo",
+        generalNone: "Rien",
+        generalDefault: "Défaut",
+        generalRetry: "Réessayez",
+        playlistLoadingNextVideo: "Chargement de la vidéo suivante",
+        controlsNextVideoIn: "Vidéo suivante dans",
+        overflowMenuPlaybackSpeed: "Vitesse de lecture",
+        overflowMenuSubtitles: "Sous-titres",
+        overflowMenuQuality: "Qualité",
+        overflowMenuAudioTracks: "Audio",
+        qualityAuto: "Auto",
+      ),
+    ],
+    deviceOrientationsAfterFullScreen: [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ],
+    //autoDispose: true,
+    controlsConfiguration: const BetterPlayerControlsConfiguration(
+      iconsColor: Colors.cyan,
+      //controlBarColor: colorPrimary,
+      liveTextColor: Colors.red,
+      playIcon: Icons.play_arrow,
+      enablePip: true,
+      enableFullscreen: true,
+      enableSubtitles: false,
+      enablePlaybackSpeed: false,
+      loadingColor: Colors.cyan,
+      enableSkips: false,
+      overflowMenuIconsColor: Colors.cyan,
+      //overflowModalColor: Colors.amberAccent
+    ),
+  );
   var scaffold = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> _productKey = GlobalKey<FormState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  new GlobalKey<RefreshIndicatorState>();
   TabController? tabController;
   bool? _isConnected;
   Future<void> test() async {
@@ -84,6 +133,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       tabController = TabController(length: 3, vsync: this);
     });
+    WidgetsBinding.instance!.addPostFrameCallback((_) => _refreshIndicatorKey.currentState!.show());
    /* Future.delayed(Duration(seconds: 0), (){
       tabController = TabController(length: 3, vsync: this);
     });*/
@@ -96,19 +146,30 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+    tabController?.dispose();
     super.dispose();
   }
   @override
-  void updateKeepAlive() {
-    // TODO: implement updateKeepAlive
-    super.updateKeepAlive();
+  void didUpdateWidget(HomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print("didUpdateWidget");
   }
+  @override
+  void deactivate() {
+    super.deactivate();
+    print("deactivate");
+  }
+  @override
+  void reassemble() {
+    super.reassemble();
+    print("reassemble");
+  }
+
 
   @override
   Widget build(BuildContext context) {
     //widget.logger.i(' Ghost-Elite ',_isConnected == true ? 'Connected' : 'Not Connected',)
     //WidgetsBinding.instance?.addPostFrameCallback((_) => executeAfterWholeBuildProcess());
-
     var tabBarItem = TabBar(
       labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
       labelColor: ColorPalette.appBarColor,
@@ -171,7 +232,28 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
               ),
             ),
           ),
-          bottom: tabBarItem,
+          bottom: TabBar(
+            labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
+            labelColor: ColorPalette.appBarColor,
+            unselectedLabelColor: ColorPalette.appYellowColor,
+            indicatorSize: TabBarIndicatorSize.tab,
+            padding: const EdgeInsets.only(top: 10),
+            indicator: const BoxDecoration(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)), // Creates border
+            color: ColorPalette.appYellowColor),
+            tabs:  const [
+              Tab(
+                text: 'Precious TV',
+              ),
+              Tab(
+                text: 'Replay TV',
+              ),
+              Tab(
+                text: 'YouTube',
+              ),
+            ],
+            controller: tabController,
+          ),
         ),
         body: TabBarView(
           controller: tabController,

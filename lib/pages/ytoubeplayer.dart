@@ -11,10 +11,14 @@ import 'package:wakelock/wakelock.dart';
 import 'package:youtube_api/yt_video.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:logger/logger.dart';
+import 'package:better_player/better_player.dart';
+import '../configs/size_config.dart';
 
 
 /// Homepage
 class YtoubePlayerPage extends StatefulWidget {
+  BetterPlayerController? betterPlayerController;
+  var dataUrls;
  String? apiKey,
       channelId,
       videoId,
@@ -39,7 +43,7 @@ class YtoubePlayerPage extends StatefulWidget {
       this.title,
       this.img,
       this.date,
-      this.related,
+      this.related,this.betterPlayerController,this.dataUrls,
       required List videos})
       : super(key: key);
 
@@ -60,7 +64,50 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
   bool _isPlayerReady = false;
   String? uri,tite,lien,test;
   var logger =Logger();
-
+  bool? videoLoading;
+  GlobalKey _betterPlayerKey = GlobalKey();
+  late var betterPlayerConfiguration = BetterPlayerConfiguration(
+    autoPlay: true,
+    looping: false,
+    fullScreenByDefault: false,
+    allowedScreenSleep: false,
+    autoDetectFullscreenAspectRatio: true,
+    translations: [
+      BetterPlayerTranslations(
+        languageCode: "fr",
+        generalDefaultError: "Impossible de lire la vidéo",
+        generalNone: "Rien",
+        generalDefault: "Défaut",
+        generalRetry: "Réessayez",
+        playlistLoadingNextVideo: "Chargement de la vidéo suivante",
+        controlsNextVideoIn: "Vidéo suivante dans",
+        overflowMenuPlaybackSpeed: "Vitesse de lecture",
+        overflowMenuSubtitles: "Sous-titres",
+        overflowMenuQuality: "Qualité",
+        overflowMenuAudioTracks: "Audio",
+        qualityAuto: "Auto",
+      ),
+    ],
+    deviceOrientationsAfterFullScreen: [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ],
+    //autoDispose: true,
+    controlsConfiguration: const BetterPlayerControlsConfiguration(
+      iconsColor: Colors.cyan,
+      //controlBarColor: colorPrimary,
+      liveTextColor: Colors.red,
+      playIcon: Icons.play_arrow,
+      enablePip: true,
+      enableFullscreen: true,
+      enableSubtitles: false,
+      enablePlaybackSpeed: false,
+      loadingColor: Colors.cyan,
+      enableSkips: false,
+      overflowMenuIconsColor: Colors.cyan,
+      //overflowModalColor: Colors.amberAccent
+    ),
+  );
   final List<String> _ids = [
     'nPt8bK2gbaU',
     'gQDByCdjUXw',
@@ -72,10 +119,32 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
     '7QUtEmBT_-w',
     '34_PXCzGw1M',
   ];
-
-  @override
-  void initState() {
-    super.initState();
+  void PlayerInit(String url){
+    BetterPlayerDataSource dataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      url,
+      liveStream: true,
+      /*notificationConfiguration: const BetterPlayerNotificationConfiguration(
+        showNotification: true,
+        title: "Elephant dream",
+        author: "Some author",
+        imageUrl:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/1200px-African_Bush_Elephant.jpg",
+      ),*/
+    );
+    //betterPlayerController.setupDataSource(dataSource);
+    widget.betterPlayerController?.setBetterPlayerGlobalKey(_betterPlayerKey);
+    widget.betterPlayerController!.setupDataSource(dataSource)
+        .then((response) {
+      //s.logger.i(' Ghost-Elite ',dataSource);
+      videoLoading = false;
+    })
+        .catchError((error) async {
+      // Source did not load, url might be invalid
+      inspect(error);
+    });
+  }
+  youtubePlayer(){
     lien =widget.videoId;
     _controller = YoutubePlayerController(
       initialVideoId:
@@ -96,6 +165,13 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
     tite = widget.title;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    youtubePlayer();
+    //PlayerInit(widget.dataUrls);
+  }
+
   void listener() {
     if (_isPlayerReady && mounted && _controller.value.isFullScreen) {
       setState(() {
@@ -105,22 +181,22 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
     }
   }
 
-  @override
+/*  @override
   void deactivate() {
     // Pauses video while navigating to next page.
     _controller.pause();
     super.deactivate();
-  }
+  }*/
 
-  @override
+/*  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
-    logger.i('message',lien);
+    logger.i('message',widget.dataUrls);
     Wakelock.enable();
     return YoutubePlayerBuilder(
       player: YoutubePlayer(
@@ -133,6 +209,15 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
           backgroundColor: ColorPalette.appBarColor,
           elevation: 0,
           centerTitle: true,
+          leading: InkWell(
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: ColorPalette.appColorWhite),
+              onPressed: () {
+                //PlayerInit(widget.dataUrls);
+                Navigator.of(context).pop();
+              }
+            ),
+          ),
          //iconTheme: IconThemeData(color: ColorPalette.),
           title: Container(
             width: 100,
@@ -273,44 +358,11 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
                   clipBehavior: Clip.antiAliasWithSaveLayer,
-                  elevation: 4.0,
-                  shadowColor: Colors.grey,
+                  //elevation: 4.0,
+                  shadowColor: ColorPalette.appBarColor,
                   child: Row(
                     children: [
-                      Flexible(
-                        child: Column(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(5),
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                '${widget.ytResult[position].title}',
-                                style: GoogleFonts.roboto(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: ColorPalette.appBarColor),maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(height: 3,),
-                            Container(
-                              margin: const EdgeInsets.all(5),
-                              child: Text(
-                                '${widget.ytResult[position].description}',
-                                style: GoogleFonts.roboto(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 13.0,
-                                    color: ColorPalette.appBarColor),maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                       GestureDetector(
                         onTap: () {
                           /*Navigator.of(context).pushAndRemoveUntil(
@@ -349,11 +401,11 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
                                     height: 80,
                                     placeholder: (context, url) =>
                                         Image.asset(
-                                          "assets/images/vignete.png.png",fit: BoxFit.cover,
+                                          "assets/images/vignete.png",fit: BoxFit.cover,
                                         ),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
-                                          "assets/images/vignete.png.png",fit: BoxFit.cover
+                                            "assets/images/vignete.png",fit: BoxFit.cover
                                         ),
                                   ),
                                 ),
@@ -375,6 +427,37 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
                           ],
                         ),
                       ),
+                      Flexible(
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5),
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                '${widget.ytResult[position].title}',
+                                style: GoogleFonts.roboto(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: ColorPalette.appBarColor),maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                           /* const SizedBox(height: 3,),
+                            Container(
+                              margin: const EdgeInsets.all(5),
+                              child: Text(
+                                '${widget.ytResult[position].description}',
+                                style: GoogleFonts.roboto(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 13.0,
+                                    color: ColorPalette.appBarColor),maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )*/
+                          ],
+                        ),
+                      ),
+
 
                     ],
                   ),
@@ -400,7 +483,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
             children: <Widget>[
               Container(
                 child: const Text(
-                  "Vidéos Similaires",
+                  "Related Videos",
                   style: TextStyle(
                     color: ColorPalette.appBarColor,
                     fontSize: 12,
@@ -420,9 +503,12 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
 
   Widget card() {
     return Container(
-      width: double.infinity,
-      height: 40,
-      color: Colors.white,
+      width: SizeConfi.screenWidth,
+      height: SizeConfi.screenHeight! / 20,
+      decoration: const BoxDecoration(
+          color: ColorPalette.appBarColor,
+          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16),bottomRight: Radius.circular(16))
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -433,7 +519,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
               child: Text(
                 "${tite}",
                 style: const TextStyle(
-                  color: ColorPalette.appBarColor,
+                  color: ColorPalette.appYellowColor,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   fontFamily: "helvetica",

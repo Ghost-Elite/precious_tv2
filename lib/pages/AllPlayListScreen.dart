@@ -8,14 +8,14 @@ import 'package:precious_tv/utils/constants.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:youtube_api/yt_video.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:google_fonts/google_fonts.dart';
 
 class AllPlayListScreen extends StatefulWidget {
   YT_APIPlaylist? ytResult;
   //ListChannelsbygroup listChannelsbygroup;
   //Apimalikia apimalikia;
   var data;
-  AllPlayListScreen({this.ytResult, required String? apikey,this.data});
+  AllPlayListScreen({this.ytResult,this.data});
 
   @override
   _AllPlayListState createState() => _AllPlayListState();
@@ -130,6 +130,7 @@ class _AllPlayListState extends State<AllPlayListScreen> {
                 },
                 child: Stack(
                   children: [
+
                     GestureDetector(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
@@ -139,11 +140,11 @@ class _AllPlayListState extends State<AllPlayListScreen> {
                             imageUrl: data["items"][index]["snippet"]["thumbnails"]["medium"]["url"],width: 100,height: 100,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Image.asset(
-                              "assets/images/vignete.png.png",width: 150,
+                              "assets/images/vignete.png",width: 150,
                               fit: BoxFit.cover,
                             ),
                             errorWidget: (context, url, error) => Image.asset(
-                              "assets/images/vignete.png.png",width: 150,
+                              "assets/images/vignete.png",width: 150,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -174,10 +175,7 @@ class _AllPlayListState extends State<AllPlayListScreen> {
                   width: MediaQuery.of(context).size.width,
                   padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                   child: Text("${data["items"][index]["snippet"]["title"]}",
-                    style: const TextStyle(
-                        fontSize: 14,
-                        color: ColorPalette.appBarColor
-                    ),
+                    style: GoogleFonts.poppins(fontSize: 12,color: ColorPalette.appBarColor),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

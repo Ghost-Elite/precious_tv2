@@ -89,11 +89,11 @@ class _youtubeplayerListPageState extends State<youtubeplayerListPage> {
     super.deactivate();
   }
 
-  @override
+ /* @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {

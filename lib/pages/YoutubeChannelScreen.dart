@@ -79,7 +79,6 @@ class _YoutubeChannelScreenState extends State<YoutubeChannelScreen> with Automa
   Widget build(BuildContext context) {
     Wakelock.enable();
     return Scaffold(
-
         appBar: AppBar(
           backgroundColor: ColorPalette.appBarColor,
           elevation: 0,
@@ -234,7 +233,7 @@ class _YoutubeChannelScreenState extends State<YoutubeChannelScreen> with Automa
               MaterialPageRoute(
                   builder: (context) => AllPlayListScreen(
                     ytResult: ytResultPlaylist[position],
-                    apikey:API_Key,
+                    //apikey:API_Key,
 
                   )),
                   (Route<dynamic> route) => true,);
@@ -436,7 +435,7 @@ class _YoutubeChannelScreenState extends State<YoutubeChannelScreen> with Automa
                         builder: (context) =>
                             AllPlayListScreen(
                               ytResult: ytResultPlaylist[index],
-                              apikey:API_Key,
+                              //apikey:API_Key,
 
 
                             ),

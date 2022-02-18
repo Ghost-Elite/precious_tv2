@@ -9,7 +9,7 @@ import 'package:precious_tv/utils/constants.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'AllPlayListScreen.dart';
 import 'YoutubeChannelScreen.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 
 // ignore: must_be_immutable
 class YoutubeVideoPlayList extends StatefulWidget {
@@ -38,7 +38,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
 
   //String query = "JoyNews";
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
-  String API_CHANEL = 'UC0V1TlLFybhr0MJzxxXgdWw';
+  String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
   //Apimalikia apimalikia;
   Future<void> callAPI() async {
     print('UI callled');
@@ -118,7 +118,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                                 width: double.infinity,
                                 padding: EdgeInsets.all(10),
                                 child: const Text(
-                                  "Nouveautés",
+                                  "New videos",
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                       fontSize: 15,
@@ -137,7 +137,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                                         padding: EdgeInsets.all(10),
                                         margin: EdgeInsets.only(right: 10),
                                         child: const Text(
-                                          "Voir Plus...",
+                                          "See more...",
                                           style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
@@ -161,7 +161,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                                 width: double.infinity,
                                 padding: EdgeInsets.all(10),
                                 child: const Text(
-                                  "Nos Playlists",
+                                  "Our Playlists",
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                       fontSize: 15,
@@ -180,7 +180,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                                         padding: EdgeInsets.all(10),
                                         margin: EdgeInsets.only(right: 10),
                                         child: const Text(
-                                          "Voir Plus...",
+                                          "See more...",
                                           style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
@@ -231,7 +231,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                         MaterialPageRoute(
                           builder: (context) => AllPlayListScreen(
                             ytResult: ytResultPlaylist[index],
-                            apikey: API_Key,
+                            //apikey: API_Key,
                           ),
                         ),
                         (Route<dynamic> route) => true);
@@ -344,9 +344,8 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
+                                style: GoogleFonts.poppins(fontSize: 13,
+
                                     color: ColorPalette.appBarColor),
                               ),
                             ),
@@ -435,7 +434,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                 MaterialPageRoute(
                   builder: (context) => AllPlayListScreen(
                     ytResult: ytResultPlaylist[position],
-                    apikey: API_Key,
+                    //apikey: API_Key,
                   ),
                 ),
                 (Route<dynamic> route) => true);
@@ -481,9 +480,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
+                                style: GoogleFonts.poppins(fontSize: 13,
                                     color: ColorPalette.appBarColor),
                               ),
                             ),

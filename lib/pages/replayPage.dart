@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../utils/constants.dart';
+import 'AllPlayListScreen.dart';
 class ReplayPage extends StatefulWidget {
   List<YT_APIPlaylist> ytResultPlaylist = [];
   YT_APIPlaylist? ytResult;
@@ -61,6 +62,16 @@ class _ReplayPageState extends State<ReplayPage> {
       itemBuilder: (context, position) {
         logger.i('ghost',widget.ytResultPlaylist[position].thumbnail['high']['url']);
         return GestureDetector(
+          onTap: (){
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => AllPlayListScreen(
+                    ytResult:widget.ytResultPlaylist[position],
+                    //apikey: API_Key,
+                  ),
+                ),
+                    (Route<dynamic> route) => true);
+          },
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: Container(

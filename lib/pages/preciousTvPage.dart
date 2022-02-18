@@ -8,12 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:better_player/better_player.dart';
 import 'package:http/http.dart' as http;
-import 'package:precious_tv/configs/size_config.dart';
+import 'package:precious_tv/pages/ytoubeplayer.dart';
 import 'package:precious_tv/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../configs/size_config.dart';
+import 'AllPlayListScreen.dart';
+import 'drawerReplay.dart';
 
 class PreciousTvPage extends StatefulWidget {
   var dataUrl;
@@ -66,7 +68,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     ],
     //autoDispose: true,
     controlsConfiguration: const BetterPlayerControlsConfiguration(
-      iconsColor: Colors.cyan,
+      iconsColor: ColorPalette.appColorWhite,
       //controlBarColor: colorPrimary,
       liveTextColor: Colors.red,
       playIcon: Icons.play_arrow,
@@ -74,9 +76,9 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       enableFullscreen: true,
       enableSubtitles: false,
       enablePlaybackSpeed: false,
-      loadingColor: Colors.cyan,
+      loadingColor: ColorPalette.appColorWhite,
       enableSkips: false,
-      overflowMenuIconsColor: Colors.cyan,
+      overflowMenuIconsColor: ColorPalette.appColorWhite,
       //overflowModalColor: Colors.amberAccent
     ),
   );
@@ -84,6 +86,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     final response = await http.get(Uri.parse(widget.dataUrl));
     data = json.decode(response.body);
     getDirect(data['allitems'][0]['feed_url']);
+
     logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
     return data;
   }
@@ -164,23 +167,48 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     );
     await listener.cancel();
   }
+  initPlayer(String directUrl){
+    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      directUrl,
+      liveStream: true,
+      asmsTrackNames: ["3G 360p", "SD 480p", "HD 1080p"],
+      /*notificationConfiguration: BetterPlayerNotificationConfiguration(
+            showNotification: true,
+            title: tvTitle,
+            author: "DMedia",
+            imageUrl:tvIcon,
+          ),*/
+    );
+    if (betterPlayerController != null) {
+      betterPlayerController!.pause();
+      betterPlayerController!.setupDataSource(betterPlayerDataSource);
+    } else {
+      betterPlayerController = BetterPlayerController(betterPlayerConfiguration,
+          betterPlayerDataSource: betterPlayerDataSource);
+    }
+    betterPlayerController!.setBetterPlayerGlobalKey(_betterPlayerKey);
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getData();
+
     //logger.i('message',datas['direct_url']);
     test();
     betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+
 
   }
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    betterPlayerController!.dispose();
-    betterPlayerController ==null;
+  betterPlayerController?.dispose();
+    //betterPlayerController ==null;
+
 
   }
   @override
@@ -191,9 +219,20 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     betterPlayerController ==null;
   }
   @override
+  void didUpdateWidget(PreciousTvPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print("didUpdateWidget");
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    print("reassemble");
+  }
+  @override
   Widget build(BuildContext context) {
+    //logger.i(' ghost-elite ',datas['direct_url']);
     return Scaffold(
-      key: _scaffoldKey,
       backgroundColor: ColorPalette.appColorWhite,
       body: SafeArea(
         child:  CustomScrollView(
@@ -254,7 +293,19 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                           size: 20,
                           color: ColorPalette.appBarColor,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+
+                          Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => YtoubePlayerPage(
+                                  videoId: widget.ytResult[0].url, videos: [], ytResult: widget.ytResult,
+                                  title: widget.ytResult[0].title,
+
+                                  //apikey: API_Key,
+                                ),
+                              )
+                          );
+                        },
                       )
                     ],
                   ),
@@ -281,7 +332,16 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                           size: 20,
                           color: ColorPalette.appBarColor,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (context) => DrawerReplay(
+                                  ytResultPlaylist: widget.ytResultPlaylist,
+                                  //apikey: API_Key,
+                                ),
+                              ),
+                                  (Route<dynamic> route) => true);
+                        },
                       )
                     ],
                   ),
@@ -386,137 +446,120 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       ),
     );
   }
-  var listItem = CustomScrollView(
-    slivers: <Widget>[
-      SliverToBoxAdapter(
-        child: Column(
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              color: Colors.green,
-            ),
-            SizedBox(height: 20,),
-            Container(
-              width: 100,
-              height: 100,
-              color: Colors.green,
-            ),
-            SizedBox(height: 20,),
-            Container(
-              width: 100,
-              height: 300,
-              color: Colors.green,
-            ),
-            SizedBox(height: 20,),
-            Container(
-              width: 100,
-              height: 300,
-              color: Colors.cyan,
-            ),
-            SizedBox(height: 100,),
-            Container(
-              width: 100,
-              height: 300,
-              color: Colors.pink,
-            ),
-
-          ],
-        ),
-      )
-
-    ],
-  );
   Widget listVideos(){
     return ListView.builder(
 
       itemCount: widget.ytResult.length,
       itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 1,bottom: 1),
-          child: Container(
-            width: SizeConfi.screenWidth,
-            height: 70,
-            color: ColorPalette.appColorBg,
-            child: Row(
-              children: [
-                Stack(
-                  alignment: Alignment.bottomLeft,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 70,
-                      child: ClipRRect(
-                        clipBehavior: Clip.antiAlias,
-                        borderRadius: BorderRadius.circular(5),
-                        child: CachedNetworkImage(
-                          width: 100,
-                          height: 70,
-                          imageUrl: widget.ytResult[index].thumbnail["medium"]["url"],
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              Image.asset(
-                                "assets/images/vignete.png",
-                                width: 100,height: 70,fit: BoxFit.cover,
-                              ),
-                          errorWidget: (context, url, error) =>
-                              Image.asset(
-                                "assets/images/vignete.png",width: 100,height: 70,fit: BoxFit.cover,
-                              ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 100,
-                      height: 70,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/carreImage.png'),
-                          fit: BoxFit.cover
-                        )
-                      ),
-                    ),
-                    Container(
-                      width: 26,
-                      height: 26,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/play.png')
-                        )
-                      ),
-                    )
-                  ],
-                ),
-                Flexible(
-                  child: Column(
+        return GestureDetector(
+          onTap: (){
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => YtoubePlayerPage(
+                      videoId: widget.ytResult[index].url,
+                      title: widget.ytResult[index].title,
+
+                      ytResult: widget.ytResult, videos: [],
+                    )),
+                    (Route<dynamic> route) => true);
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 1,bottom: 3),
+            child: Container(
+              width: SizeConfi.screenWidth,
+              height: 70,
+              decoration: const BoxDecoration(
+                color: ColorPalette.appColorWhite,
+                boxShadow: [
+                  BoxShadow(
+                      color: ColorPalette.appColorDivider,
+                      spreadRadius: 0,
+                      blurRadius: 0,
+                      offset: Offset(0, 1)
+                  ),
+
+                ],
+              ),
+              child: Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomLeft,
                     children: [
                       Container(
-                        margin: EdgeInsets.all(5),
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          '${widget.ytResult[index].title}',
-                          style: GoogleFonts.roboto(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,color: ColorPalette.appBarColor
-                          ),maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        width: 100,
+                        height: 70,
+                        child: ClipRRect(
+                          clipBehavior: Clip.antiAlias,
+                          borderRadius: BorderRadius.circular(5),
+                          child: CachedNetworkImage(
+                            width: 100,
+                            height: 70,
+                            imageUrl: widget.ytResult[index].thumbnail["medium"]["url"],
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Image.asset(
+                                  "assets/images/vignete.png",
+                                  width: 100,height: 70,fit: BoxFit.cover,
+                                ),
+                            errorWidget: (context, url, error) =>
+                                Image.asset(
+                                  "assets/images/vignete.png",width: 100,height: 70,fit: BoxFit.cover,
+                                ),
+                          ),
                         ),
                       ),
-                      SizedBox(height: 3,),
-                      /*Container(
-                        margin: EdgeInsets.all(5),
-                        child: Text(
-                          '${widget.ytResult[index].description}',
-                          style: GoogleFonts.roboto(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 13.0,),maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                      Container(
+                        width: 100,
+                        height: 70,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/carreImage.png'),
+                            fit: BoxFit.cover
+                          )
                         ),
-                      )*/
+                      ),
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/play.png')
+                          )
+                        ),
+                      )
                     ],
                   ),
-                )
-              ],
+                  Flexible(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(5),
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            '${widget.ytResult[index].title}',
+                            style: GoogleFonts.roboto(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,color: ColorPalette.appBarColor
+                            ),maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(height: 3,),
+                        /*Container(
+                          margin: EdgeInsets.all(5),
+                          child: Text(
+                            '${widget.ytResult[index].description}',
+                            style: GoogleFonts.roboto(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 13.0,),maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )*/
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );
@@ -533,51 +576,69 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             itemBuilder: (_, i) {
-              return SizedBox(
-                height: 160,
-                width: 140,
-                //margin: const EdgeInsets.only(left: 6,  top: 10, bottom: 6),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(right: 2,left: 2),
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          SizedBox(
-                            height: 160,
-                            width: 140,
-                            child: GestureDetector(
-                              child: Container(
-                                //margin: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                          widget.ytResultPlaylist[i].thumbnail['high']['url'],
-                                        ),
-                                        fit: BoxFit.cover)),
-                                width: MediaQuery.of(context).size.width,
-                                height: 130,
+              return GestureDetector(
+                onTap: (){
+                  logger.i('message',widget.ytResultPlaylist[1].thumbnail);
+                  if(widget.ytResultPlaylist !=null || widget.ytResultPlaylist==0){
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => AllPlayListScreen(
+                            ytResult:widget.ytResultPlaylist[i],
+                            //apikey: API_Key,
+                          ),
+                        ),
+                            (Route<dynamic> route) => true);
+                  }else{
+                    logger.i('test video');
+                  }
+
+                },
+                child: SizedBox(
+                  height: 160,
+                  width: 140,
+                  //margin: const EdgeInsets.only(left: 6,  top: 10, bottom: 6),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 2,left: 2),
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            SizedBox(
+                              height: 160,
+                              width: 140,
+                              child: GestureDetector(
+                                child: Container(
+                                  //margin: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                            widget.ytResultPlaylist[i].thumbnail['high']['url'],
+                                          ),
+                                          fit: BoxFit.cover)),
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 130,
+                                ),
                               ),
                             ),
-                          ),
-                          Container(
-                            height: 160,
-                            width: 140,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('assets/images/rectImage.png'),
-                                fit: BoxFit.cover
-                              )
+                            Container(
+                              height: 160,
+                              width: 140,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('assets/images/rectImage.png'),
+                                  fit: BoxFit.cover
+                                )
+                              ),
                             ),
-                          ),
-                          Text('${widget.ytResultPlaylist[i].title}',style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 12,color: ColorPalette.appColorWhite),maxLines: 2,
-                          )
-                        ],
+                            Text('${widget.ytResultPlaylist[i].title}',style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 12,color: ColorPalette.appColorWhite),maxLines: 2,
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }));

@@ -33,14 +33,14 @@ Future main() async {
                   return MaterialApp(
                     debugShowCheckedModeBanner: false,
                     title: '',
-                    localizationsDelegates: const [
+                   /* localizationsDelegates: const [
                       GlobalMaterialLocalizations.delegate,
                       GlobalWidgetsLocalizations.delegate,
                     ],
                     supportedLocales: const [
                       Locale('en', ''), // English
                       Locale('fr', ''), // french
-                    ],
+                    ],*/
                     theme: ThemeData(
                       primaryColor: Colors.blue[800],
                       accentColor: Colors.blue,

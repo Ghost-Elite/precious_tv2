@@ -74,12 +74,12 @@ class _DrawerReplayState extends State<DrawerReplay> {
                             imageUrl: widget.ytResultPlaylist[position].thumbnail['high']['url'],
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Image.asset(
-                              "assets/images/malikiaError.png",
-                              fit: BoxFit.contain,
+                              "assets/images/vignete.png",
+                              fit: BoxFit.cover,
                             ),
                             errorWidget: (context, url, error) => Image.asset(
-                              "assets/images/malikiaError.png",
-                              fit: BoxFit.contain,
+                              "assets/images/vignete.png",
+                              fit: BoxFit.cover,
                             ),
                           ),
                           width: MediaQuery.of(context).size.width,
