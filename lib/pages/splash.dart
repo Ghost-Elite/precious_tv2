@@ -200,6 +200,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
           ytApi: ytApi,
           ytResult: ytResult,
           ytResultPlaylist: ytResultPlaylist,
+          dataToLoad: dataUrl['ACAN_API'][0]['app_data_toload'],
         ),
         ),
             (Route<dynamic> route) => false,

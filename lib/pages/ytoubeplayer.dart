@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:precious_tv/utils/constants.dart';
@@ -13,8 +15,10 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:better_player/better_player.dart';
 import '../configs/size_config.dart';
+import 'package:better_player/better_player.dart';
+import 'package:http/http.dart' as http;
 
-
+import 'home.dart';
 /// Homepage
 class YtoubePlayerPage extends StatefulWidget {
   BetterPlayerController? betterPlayerController;
@@ -65,6 +69,10 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
   String? uri,tite,lien,test;
   var logger =Logger();
   bool? videoLoading;
+  BetterPlayerController? betterPlayerController;
+  var data;
+  var datas;
+  VoidCallback? listeners;
   GlobalKey _betterPlayerKey = GlobalKey();
   late var betterPlayerConfiguration = BetterPlayerConfiguration(
     autoPlay: true,
@@ -108,6 +116,24 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
       //overflowModalColor: Colors.amberAccent
     ),
   );
+  Future<void> getData() async {
+    final response = await http.get(Uri.parse(widget.dataUrls));
+    data = json.decode(response.body);
+    getDirect(data['allitems'][0]['feed_url']);
+
+    logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
+    return data;
+  }
+  Future<void> getDirect(String url) async {
+    final response = await http.get(Uri.parse(url));
+    if(response.statusCode == 200){
+      datas = json.decode(response.body);
+      setState(() {
+        datas;
+      });
+    }
+    PlayerInit(datas['direct_url']);
+  }
   final List<String> _ids = [
     'nPt8bK2gbaU',
     'gQDByCdjUXw',
@@ -170,6 +196,17 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
     super.initState();
     youtubePlayer();
     //PlayerInit(widget.dataUrls);
+    logger.i("initState");
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      logger.i("WidgetsBinding");
+    });
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      logger.i("SchedulerBinding");
+    });
+    listeners = () {
+      setState(() {
+      });
+    };
   }
 
   void listener() {
@@ -196,7 +233,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    logger.i('message',widget.dataUrls);
+    //logger.i('message',datas['direct_url']);
     Wakelock.enable();
     return YoutubePlayerBuilder(
       player: YoutubePlayer(
@@ -209,14 +246,13 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
           backgroundColor: ColorPalette.appBarColor,
           elevation: 0,
           centerTitle: true,
-          leading: InkWell(
-            child: IconButton(
+          leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: ColorPalette.appColorWhite),
               onPressed: () {
                 //PlayerInit(widget.dataUrls);
+                //PlayerInit();
                 Navigator.of(context).pop();
               }
-            ),
           ),
          //iconTheme: IconThemeData(color: ColorPalette.),
           title: Container(

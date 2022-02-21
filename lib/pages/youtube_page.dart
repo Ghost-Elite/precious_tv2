@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -8,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../configs/size_config.dart';
 import '../utils/constants.dart';
 import 'AllPlayListScreen.dart';
+import 'package:logger/logger.dart';
 class YoutubePages extends StatefulWidget {
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
@@ -28,7 +30,7 @@ class _YoutubePagesState extends State<YoutubePages>{
 
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
   String API_CHANEL = 'UCIby2pzNJkvQsbc38shuGTw';
-
+  var logger = Logger();
   late PlayerState _playerState;
   late YoutubeMetaData _videoMetaData;
   double _volume = 100;
@@ -72,6 +74,13 @@ class _YoutubePagesState extends State<YoutubePages>{
     _videoMetaData = const YoutubeMetaData();
     _playerState = PlayerState.unknown;
     //tite = widget.title;
+    logger.i("initState");
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      logger.i("WidgetsBinding");
+    });
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      logger.i("SchedulerBinding");
+    });
   }
   void listener() {
     if (_isPlayerReady && mounted && _controller.value.isFullScreen) {

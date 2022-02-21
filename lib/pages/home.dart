@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:precious_tv/pages/preciousTvPage.dart';
 import 'package:precious_tv/pages/replayPage.dart';
@@ -16,11 +17,12 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
   var lien;
   var logger=Logger();
+  var dataToLoad;
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  HomePage({Key? key,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist}) : super(key: key);
+  HomePage({Key? key,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist,this.dataToLoad}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -133,10 +135,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       tabController = TabController(length: 3, vsync: this);
     });
-    WidgetsBinding.instance!.addPostFrameCallback((_) => _refreshIndicatorKey.currentState!.show());
-   /* Future.delayed(Duration(seconds: 0), (){
-      tabController = TabController(length: 3, vsync: this);
-    });*/
+    widget.logger.i("initState");
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      widget.logger.i("WidgetsBinding");
+    });
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      print("SchedulerBinding");
+    });
 
   }
   @override
@@ -259,7 +264,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
           controller: tabController,
           
           children: [
-            PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist),
+            PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist,dataToLoad: widget.dataToLoad,),
             ReplayPage(ytResultPlaylist: widget.ytResultPlaylist,),
             YoutubePages(ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist,)
 

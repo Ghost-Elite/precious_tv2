@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:better_player/better_player.dart';
@@ -19,11 +20,12 @@ import 'drawerReplay.dart';
 
 class PreciousTvPage extends StatefulWidget {
   var dataUrl;
+  var dataToLoad;
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  PreciousTvPage({Key? key,this.dataUrl,this.ytApiPlaylist,required this.ytResultPlaylist,required this.ytResult,this.ytApi}) : super(key: key);
+  PreciousTvPage({Key? key,this.dataUrl,this.ytApiPlaylist,required this.ytResultPlaylist,required this.ytResult,this.ytApi,this.dataToLoad}) : super(key: key);
 
   @override
   _PreciousTvPageState createState() => _PreciousTvPageState();
@@ -40,6 +42,8 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   AnimationController? animationController;
   var data;
   var datas;
+  var dataVOD;
+  var dataEmis;
   late var betterPlayerConfiguration = BetterPlayerConfiguration(
     autoPlay: true,
     looping: false,
@@ -87,7 +91,10 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     data = json.decode(response.body);
     getDirect(data['allitems'][0]['feed_url']);
 
-    logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
+    //logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
+    getVODPrograms(data['allitems'][0]['vod_feed']);
+    getVODEmissions(data['allitems'][0]['alaune_feed']);
+
     return data;
   }
   Future<void> getDirect(String url) async {
@@ -124,6 +131,22 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       // Source did not load, url might be invalid
       inspect(error);
     });
+  }
+  Future<void> getVODPrograms(String url) async {
+    final response = await http.get(Uri.parse(url));
+    dataVOD = json.decode(response.body);
+    getDirect(dataVOD['allitems'][0]['feed_url']);
+
+    //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems']);
+    return dataVOD;
+  }
+  Future<void> getVODEmissions(String url) async {
+    final response = await http.get(Uri.parse(url));
+    dataEmis = json.decode(response.body);
+    //getDirect(dataVOD['allitems'][0]['feed_url']);
+
+    logger.i(' Ghost-Elite 2022 ',dataEmis['allitems']);
+    return dataEmis;
   }
   Future<void> test() async {
     // Simple check to see if we have Internet
@@ -199,6 +222,13 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     //logger.i('message',datas['direct_url']);
     test();
     betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+    logger.i("initState");
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      logger.i("WidgetsBinding");
+    });
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      logger.i("SchedulerBinding");
+    });
 
 
   }
@@ -232,6 +262,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   @override
   Widget build(BuildContext context) {
     //logger.i(' ghost-elite ',datas['direct_url']);
+    //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems'][0]['logo']);
     return Scaffold(
       backgroundColor: ColorPalette.appColorWhite,
       body: SafeArea(
@@ -300,6 +331,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                                 builder: (context) => YtoubePlayerPage(
                                   videoId: widget.ytResult[0].url, videos: [], ytResult: widget.ytResult,
                                   title: widget.ytResult[0].title,
+                                  dataUrls: widget.dataUrl,
 
                                   //apikey: API_Key,
                                 ),
@@ -447,7 +479,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     );
   }
   Widget listVideos(){
-    return ListView.builder(
+    return widget.dataToLoad == "youtube"? ListView.builder(
 
       itemCount: widget.ytResult.length,
       itemBuilder: (BuildContext context, int index) {
@@ -564,6 +596,123 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
           ),
         );
       },
+    ):ListView.builder(
+
+      itemCount: dataEmis==null?0: dataEmis['allitems'].length,
+      itemBuilder: (BuildContext context, int index) {
+        return GestureDetector(
+          onTap: (){
+           /* Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => YtoubePlayerPage(
+                      videoId: widget.ytResult[index].url,
+                      title: widget.ytResult[index].title,
+
+                      ytResult: widget.ytResult, videos: [],
+                    )),
+                    (Route<dynamic> route) => true);*/
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 1,bottom: 3),
+            child: Container(
+              width: SizeConfi.screenWidth,
+              height: 70,
+              decoration: const BoxDecoration(
+                color: ColorPalette.appColorWhite,
+                boxShadow: [
+                  BoxShadow(
+                      color: ColorPalette.appColorDivider,
+                      spreadRadius: 0,
+                      blurRadius: 0,
+                      offset: Offset(0, 1)
+                  ),
+
+                ],
+              ),
+              child: Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 70,
+                        child: ClipRRect(
+                          clipBehavior: Clip.antiAlias,
+                          borderRadius: BorderRadius.circular(5),
+                          child: CachedNetworkImage(
+                            width: 100,
+                            height: 70,
+                            imageUrl: dataEmis['allitems'][index]['logo'],
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Image.asset(
+                                  "assets/images/vignete.png",
+                                  width: 100,height: 70,fit: BoxFit.cover,
+                                ),
+                            errorWidget: (context, url, error) =>
+                                Image.asset(
+                                  "assets/images/vignete.png",width: 100,height: 70,fit: BoxFit.cover,
+                                ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 100,
+                        height: 70,
+                        decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage('assets/images/carreImage.png'),
+                                fit: BoxFit.cover
+                            )
+                        ),
+                      ),
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage('assets/images/play.png')
+                            )
+                        ),
+                      )
+                    ],
+                  ),
+                  Flexible(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(5),
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            '${dataEmis['allitems'][index]['title']}',
+                            style: GoogleFonts.roboto(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,color: ColorPalette.appBarColor
+                            ),maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(height: 3,),
+                        /*Container(
+                          margin: EdgeInsets.all(5),
+                          child: Text(
+                            '${widget.ytResult[index].description}',
+                            style: GoogleFonts.roboto(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 13.0,),maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )*/
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
   Widget makeMostPopular() {
@@ -571,7 +720,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       //margin: const EdgeInsets.symmetric(horizontal: 10.2),
       //margin: EdgeInsets.symmetric(vertical: 8.0),
         height: 200,
-        child: ListView.builder(
+        child: widget.dataToLoad == "youtube"? ListView.builder(
             itemCount: widget.ytResultPlaylist.length,
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
@@ -641,7 +790,78 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                   ),
                 ),
               );
-            }));
+            }):ListView.builder(
+            itemCount: dataVOD==null?0: dataVOD['allitems'].length,
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (_, i) {
+              return GestureDetector(
+                onTap: (){
+                  /*logger.i('message',widget.ytResultPlaylist[1].thumbnail);
+                  if(widget.ytResultPlaylist !=null || widget.ytResultPlaylist==0){
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => AllPlayListScreen(
+                            ytResult:widget.ytResultPlaylist[i],
+                            //apikey: API_Key,
+                          ),
+                        ),
+                            (Route<dynamic> route) => true);
+                  }else{
+                    logger.i('test video');
+                  }*/
+
+                },
+                child: SizedBox(
+                  height: 160,
+                  width: 140,
+                  //margin: const EdgeInsets.only(left: 6,  top: 10, bottom: 6),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 2,left: 2),
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            SizedBox(
+                              height: 160,
+                              width: 140,
+                              child: GestureDetector(
+                                child: Container(
+                                  //margin: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                            dataVOD['allitems'][i]['logo'],
+                                          ),
+                                          fit: BoxFit.cover)),
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 130,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              height: 160,
+                              width: 140,
+                              decoration: const BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage('assets/images/rectImage.png'),
+                                      fit: BoxFit.cover
+                                  )
+                              ),
+                            ),
+                            Text('${dataVOD['allitems'][i]['title']}',style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 12,color: ColorPalette.appColorWhite),maxLines: 2,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            })
+    );
   }
 
 }
