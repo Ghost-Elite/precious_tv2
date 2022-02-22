@@ -111,6 +111,17 @@ class _YoutubePagesState extends State<YoutubePages>{
   @override
   Widget build(BuildContext context) {
     return YoutubePlayerBuilder(
+      onExitFullScreen: () {
+        // The player forces portraitUp after exiting fullscreen. This overrides the behaviour.
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.portraitUp]);
+      },
+      onEnterFullScreen: () {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ]);
+      },
       player: YoutubePlayer(
         controller: _controller,
         showVideoProgressIndicator: true,
@@ -127,7 +138,8 @@ class _YoutubePagesState extends State<YoutubePages>{
                       padding: EdgeInsets.only(top: 5),
                       width: SizeConfi.screenWidth,
                       height: 180,
-                      child: player,
+                      color: Colors.black,
+                      child: _controller !=null? player:Container(),
                     ),
                     Container(
                       width: SizeConfi.screenWidth,

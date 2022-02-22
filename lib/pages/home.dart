@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -262,7 +263,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
         ),
         body: TabBarView(
           controller: tabController,
-          
+          physics: BouncingScrollPhysics(),
+          dragStartBehavior: DragStartBehavior.start,
           children: [
             PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist,dataToLoad: widget.dataToLoad,),
             ReplayPage(ytResultPlaylist: widget.ytResultPlaylist,),

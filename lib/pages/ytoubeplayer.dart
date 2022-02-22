@@ -72,6 +72,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
   BetterPlayerController? betterPlayerController;
   var data;
   var datas;
+  var dataUrl;
   VoidCallback? listeners;
   GlobalKey _betterPlayerKey = GlobalKey();
   late var betterPlayerConfiguration = BetterPlayerConfiguration(
@@ -134,6 +135,14 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
     }
     PlayerInit(datas['direct_url']);
   }
+  Future<void> getUrl() async {
+    final response = await http.get(Uri.parse(widget.url.toString()));
+    dataUrl = json.decode(response.body);
+    //getDirect(data['allitems'][0]['feed_url']);
+
+    logger.i(' Ghost-Elite 2022 4',dataUrl['video_url']);
+    return dataUrl;
+  }
   final List<String> _ids = [
     'nPt8bK2gbaU',
     'gQDByCdjUXw',
@@ -195,6 +204,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
   void initState() {
     super.initState();
     youtubePlayer();
+    getUrl();
     //PlayerInit(widget.dataUrls);
     logger.i("initState");
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -233,7 +243,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    //logger.i('message',datas['direct_url']);
+    logger.i(' message 2022',widget.related);
     Wakelock.enable();
     return YoutubePlayerBuilder(
       player: YoutubePlayer(

@@ -17,6 +17,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../configs/size_config.dart';
 import 'AllPlayListScreen.dart';
 import 'drawerReplay.dart';
+import 'listVideoProg.dart';
 
 class PreciousTvPage extends StatefulWidget {
   var dataUrl;
@@ -134,7 +135,9 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   }
   Future<void> getVODPrograms(String url) async {
     final response = await http.get(Uri.parse(url));
-    dataVOD = json.decode(response.body);
+    setState(() {
+      dataVOD = json.decode(response.body);
+    });
     getDirect(dataVOD['allitems'][0]['feed_url']);
 
     //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems']);
@@ -145,7 +148,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     dataEmis = json.decode(response.body);
     //getDirect(dataVOD['allitems'][0]['feed_url']);
 
-    logger.i(' Ghost-Elite 2022 ',dataEmis['allitems']);
+    //logger.i(' Ghost-Elite 2022 ',dataEmis['allitems']);
     return dataEmis;
   }
   Future<void> test() async {
@@ -216,12 +219,14 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+    betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     getData();
+    super.initState();
+
 
     //logger.i('message',datas['direct_url']);
-    test();
-    betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+    //test();
+
     logger.i("initState");
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       logger.i("WidgetsBinding");
@@ -236,7 +241,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-  betterPlayerController?.dispose();
+  betterPlayerController!.dispose();
     //betterPlayerController ==null;
 
 
@@ -261,8 +266,8 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   }
   @override
   Widget build(BuildContext context) {
-    //logger.i(' ghost-elite ',datas['direct_url']);
-    //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems'][0]['logo']);
+    //logger.i(' ghost-elite ',dataVOD['allitems'].length);
+    //logger.i(' Ghost-Elite 2022 ',data['allitems'][0]['alaune_feed']);
     return Scaffold(
       backgroundColor: ColorPalette.appColorWhite,
       body: SafeArea(
@@ -275,11 +280,13 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                     padding: EdgeInsets.only(top: 5),
                     width: SizeConfi.screenWidth,
                     height: 180,
-                    child: AspectRatio(
+                    color: Colors.black,
+                    child: betterPlayerController !=null?
+                    AspectRatio(
                       aspectRatio: 16 / 9,
                       key: _betterPlayerKey,
                       child: BetterPlayer(controller: betterPlayerController!),
-                    ),
+                    ):Container(),
                   ),
                   Container(
                     width: SizeConfi.screenWidth,
@@ -332,6 +339,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                                   videoId: widget.ytResult[0].url, videos: [], ytResult: widget.ytResult,
                                   title: widget.ytResult[0].title,
                                   dataUrls: widget.dataUrl,
+                                  url: dataEmis['allitems'][0]['feed_url'],
 
                                   //apikey: API_Key,
                                 ),
@@ -369,6 +377,8 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                               MaterialPageRoute(
                                 builder: (context) => DrawerReplay(
                                   ytResultPlaylist: widget.ytResultPlaylist,
+                                  dataToLoad: widget.dataToLoad,
+                                  urls: dataVOD,
                                   //apikey: API_Key,
                                 ),
                               ),
@@ -797,19 +807,15 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
             itemBuilder: (_, i) {
               return GestureDetector(
                 onTap: (){
-                  /*logger.i('message',widget.ytResultPlaylist[1].thumbnail);
-                  if(widget.ytResultPlaylist !=null || widget.ytResultPlaylist==0){
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => AllPlayListScreen(
-                            ytResult:widget.ytResultPlaylist[i],
-                            //apikey: API_Key,
-                          ),
+                  //logger.i('message',widget.ytResultPlaylist[1].thumbnail);
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => ListVideoPrograms(
+                          urls:  dataVOD['allitems'][i]['feed_url'],
+                          //apikey: API_Key,
                         ),
-                            (Route<dynamic> route) => true);
-                  }else{
-                    logger.i('test video');
-                  }*/
+                      ),
+                          (Route<dynamic> route) => true);
 
                 },
                 child: SizedBox(
