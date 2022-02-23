@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:precious_tv/pages/lecteurVideosVod.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:logger/logger.dart';
@@ -44,21 +45,21 @@ class _ListVideoProgramsState extends State<ListVideoPrograms> {
 
   @override
   Widget build(BuildContext context) {
-    logger.i('ghost-elite 22', dataVOD);
+   // logger.i(' ghost-elite 22', dataVOD['allitems'] );
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ColorPalette.appBarColor,
-        centerTitle: true,
-        title: Container(
-          width: 100,
-          height: 19.0,
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/images/title.png')
-              )
-          ),
+      backgroundColor: ColorPalette.appBarColor,
+      centerTitle: true,
+      title: Container(
+        width: 100,
+        height: 19.0,
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/images/title.png')
+            )
         ),
       ),
+    ),
       body: makeItemEmissions(),
     );
   }
@@ -79,19 +80,17 @@ class _ListVideoProgramsState extends State<ListVideoPrograms> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    /*Navigator.of(context).pushAndRemoveUntil(
+                    logger.i(' message',dataVOD['allitems'][index]['type']);
+                    Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) =>
-                                youtubeplayerListPage(
-                                  url: data["items"][index]["snippet"]["resourceId"]["videoId"],
-                                  titre: data["items"][index]["snippet"]["title"],
-                                  image: data["items"][index]["snippet"]["thumbnails"]["medium"]["url"],
-                                  desc: data["items"][index]["snippet"]["title"],
-                                  //title: data["items"][index]["snippet"]["title"],
-
-                                  data: data,
+                                LecteurVideos(
+                                  urls: dataVOD['allitems'][index]['feed_url'],
+                                  reletead: dataVOD['allitems'][index]['relatedItems'],
+                                  title: dataVOD['allitems'][index]['title'],
+                                  onPlay: dataVOD['allitems'][index]['type'],
                                 )),
-                            (Route<dynamic> route) => true);*/
+                            (Route<dynamic> route) => true);
                   },
                   child: Stack(
                     children: [

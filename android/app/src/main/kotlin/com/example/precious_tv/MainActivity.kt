@@ -1,4 +1,4 @@
-package com.example.precious_tv
+package com.acangroup.precious_tv
 
 import io.flutter.embedding.android.FlutterActivity
 

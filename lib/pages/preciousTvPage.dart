@@ -14,6 +14,7 @@ import 'package:precious_tv/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+
 import '../configs/size_config.dart';
 import 'AllPlayListScreen.dart';
 import 'drawerReplay.dart';
@@ -75,6 +76,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     controlsConfiguration: const BetterPlayerControlsConfiguration(
       iconsColor: ColorPalette.appColorWhite,
       //controlBarColor: colorPrimary,
+      controlBarColor: Colors.transparent,
       liveTextColor: Colors.red,
       playIcon: Icons.play_arrow,
       enablePip: true,
