@@ -50,6 +50,7 @@ class _ReplayPageState extends State<ReplayPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      key: _refreshIndicatorKey,
       body: makeItemEmissions(),
     );
   }

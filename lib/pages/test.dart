@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 class NestedScrollViewSampleOne extends StatelessWidget {
   const NestedScrollViewSampleOne({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class NestedScrollViewFirstHome extends StatelessWidget {
       appBar: AppBar(
         title: Text('NestedScrollView Sample'),
       ),
-      body: NestedScrollView(
+      body: /*NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
@@ -72,6 +73,30 @@ class NestedScrollViewFirstHome extends StatelessWidget {
             ),
           ],
         ),
+      )*/
+      WebViewPlus(
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (controller) {
+          controller.loadString(r"""
+           <html lang="en">
+              <body>
+                  <script src="https://geo.dailymotion.com/libs/player/5b4b33dcca31c0674bff"></script>
+        
+        
+                  <div id="my-dailymotion-player">My Player placeholder</div>
+
+            <script>
+              dailymotion
+                .createPlayer("my-dailymotion-player", {
+                  video: "x84sh87",
+              })
+              .then((player) => console.log(player))
+              .catch((e) => console.error(e));
+            </script>
+            </body>
+           </html>
+      """);
+        },
       ),
     );
   }

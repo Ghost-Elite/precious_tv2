@@ -12,7 +12,8 @@ import '../configs/size_config.dart';
 import '../utils/constants.dart';
 class LecteurDesEmissions extends StatefulWidget {
   var videoUrl,videoItems,title;
-  LecteurDesEmissions({Key? key,this.videoUrl,this.videoItems,this.title}) : super(key: key);
+  var dataToLoad;
+  LecteurDesEmissions({Key? key,this.videoUrl,this.videoItems,this.title,this.dataToLoad}) : super(key: key);
 
   @override
   _LecteurDesEmissionsState createState() => _LecteurDesEmissionsState();
@@ -82,6 +83,21 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
     }*/
     return data;
   }
+  Future<void> getVODVideosYoutube() async {
+    final response = await http.get(Uri.parse(urlData));
+    setState(() {
+      data = json.decode(response.body);
+    });
+
+    logger.i(' Ghost-Elite 2022 ',data['video_url']);
+    iniPlayerYoutube(data['video_url']);
+    /*if (widget.onPlay == "vod") {
+      getInitPlayer(data['video_url']);
+    } else {
+      iniPlayerYoutube(data['video_url']);
+    }*/
+    return data;
+  }
   Future<void> getVODEmissions() async {
     final response = await http.get(Uri.parse(ulVod));
     setState(() {
@@ -108,6 +124,20 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
     }
     betterPlayerController!.setBetterPlayerGlobalKey(_betterPlayerKey1);
   }
+  iniPlayerYoutube(String url) {
+    _controller = YoutubePlayerController(
+      initialVideoId: '${data['video_url']}'.split("=")[1],
+      flags: const YoutubePlayerFlags(
+        mute: false,
+        autoPlay: true,
+        disableDragSeek: false,
+        loop: false,
+        isLive: false,
+        forceHD: false,
+        enableCaption: true,
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -116,7 +146,12 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
     urlData=widget.videoUrl;
     ulVod=widget.videoItems;
     title=widget.title;
-    getVODVideos();
+    if(widget=="vod"){
+      getVODVideos();
+    }else{
+      getVODVideosYoutube();
+    }
+
     getVODEmissions();
 
   }
@@ -138,7 +173,7 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
   @override
   Widget build(BuildContext context) {
     logger.i(' message yy',urlData);
-    return Scaffold(
+    return widget.dataToLoad=="vod"?Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: ColorPalette.appBarColor,
@@ -164,32 +199,91 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
       body: Container(
         decoration:
         const BoxDecoration(color: ColorPalette.appColorWhite),
-        child: Stack(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height,
-              //padding: EdgeInsets.only(top: 10),
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(
-                    height: 83,
-                  ),
-                  Container(
-                    width: double.infinity,
-                    child: player(),
-                  ),
-                  card(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  videoSimilaire(),
-                  Expanded(
-                    child: cardItems(),
-                  )
-                ],
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          //padding: EdgeInsets.only(top: 10),
+          child: Column(
+            children: <Widget>[
+              const SizedBox(
+                height: 83,
               ),
-            ),
-          ],
+              Container(
+                width: double.infinity,
+                child: player(),
+              ),
+              card(),
+              const SizedBox(
+                height: 10,
+              ),
+              videoSimilaire(),
+              Expanded(
+                child: cardItems(),
+              )
+            ],
+          ),
+        ),
+      ),
+    ):YoutubePlayerBuilder(
+      onExitFullScreen: () {
+        // The player forces portraitUp after exiting fullscreen. This overrides the behaviour.
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.portraitUp]);
+      },
+      onEnterFullScreen: () {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ]);
+      },
+      player: YoutubePlayer(
+        controller: _controller!,
+        showVideoProgressIndicator: true,
+      ),
+      builder: (context, player) => Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: ColorPalette.appBarColor,
+          elevation: 0,
+          centerTitle: true,
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back,
+                  color: ColorPalette.appColorWhite),
+              onPressed: () {
+                //PlayerInit(widget.dataUrls);
+                //PlayerInit();
+                Navigator.of(context).pop();
+              }),
+          //iconTheme: IconThemeData(color: ColorPalette.),
+          title: Container(
+            width: 100,
+            height: 19.0,
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/images/title.png'))),
+          ),
+        ),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          //padding: EdgeInsets.only(top: 10),
+          child: Column(
+            children: <Widget>[
+              const SizedBox(
+                height: 83,
+              ),
+              Container(
+                width: double.infinity,
+                child: player,
+              ),
+              card(),
+              const SizedBox(
+                height: 10,
+              ),
+              videoSimilaire(),
+              Expanded(
+                child: cardItems(),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -225,13 +319,24 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
         return GestureDetector(
           onTap: (){
             logger.i(' ghost-elite 90',urlData);
-            setState(() {
-              urlData=dataEmis['allitems'][index]['feed_url'];
-              ulVod=dataEmis['allitems'][index]['relatedItems'];
-              title=dataEmis['allitems'][index]['title'];
+            if(widget.dataToLoad=="vod"){
+              setState(() {
+                urlData=dataEmis['allitems'][index]['feed_url'];
+                ulVod=dataEmis['allitems'][index]['relatedItems'];
+                title=dataEmis['allitems'][index]['title'];
 
-            });
-            getVODVideos();
+              });
+              getVODVideos();
+            }else{
+              setState(() {
+                urlData=dataEmis['allitems'][index]['feed_url'];
+                ulVod=dataEmis['allitems'][index]['relatedItems'];
+                title=dataEmis['allitems'][index]['title'];
+
+              });
+              getVODVideosYoutube();
+            }
+
             getVODEmissions();
           },
           child: Padding(
@@ -258,13 +363,25 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          setState(() {
-                            urlData=dataEmis['allitems'][index]['feed_url'];
-                            ulVod=dataEmis['allitems'][index]['relatedItems'];
-                            title=dataEmis['allitems'][index]['title'];
+                          logger.i(' ghost-elite 90',urlData);
+                          if(widget.dataToLoad=="vod"){
+                            setState(() {
+                              urlData=dataEmis['allitems'][index]['feed_url'];
+                              ulVod=dataEmis['allitems'][index]['relatedItems'];
+                              title=dataEmis['allitems'][index]['title'];
 
-                          });
-                          getVODVideos();
+                            });
+                            getVODVideos();
+                          }else{
+                            setState(() {
+                              urlData=dataEmis['allitems'][index]['feed_url'];
+                              ulVod=dataEmis['allitems'][index]['relatedItems'];
+                              title=dataEmis['allitems'][index]['title'];
+
+                            });
+                            getVODVideosYoutube();
+                          }
+
                           getVODEmissions();
                         },
                         child: Container(

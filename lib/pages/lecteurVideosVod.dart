@@ -12,12 +12,12 @@ import '../utils/constants.dart';
 import 'lecteurDesReletead.dart';
 
 class LecteurVideos extends StatefulWidget {
-  var urls;
+  var urls,uri;
   var reletead;
   var title;
   var onPlay;
 
-  LecteurVideos({Key? key, this.urls, this.reletead, this.title, this.onPlay})
+  LecteurVideos({Key? key, this.urls, this.reletead, this.title, this.onPlay,this.uri})
       : super(key: key);
 
   @override
@@ -82,14 +82,10 @@ class _LecteurVideosState extends State<LecteurVideos> {
       data = json.decode(response.body);
     });
     //logger.i(' Ghost-Elite 2022 ',data['video_url']);
-
-    if (widget.onPlay == "vod") {
-      getInitPlayer(data['video_url']);
-    } else {
-      iniPlayerYoutube(data['video_url']);
-    }
+    getInitPlayer(data['video_url']);
     return data;
   }
+
 
   Future<void> getVODIteams() async {
     final response = await http.get(Uri.parse(widget.reletead));
@@ -117,9 +113,9 @@ class _LecteurVideosState extends State<LecteurVideos> {
     betterPlayerController!.setBetterPlayerGlobalKey(_betterPlayerKey1);
   }
 
-  iniPlayerYoutube(String url) {
+  iniPlayerYoutube() {
     _controller = YoutubePlayerController(
-      initialVideoId: '${data['video_url']}'.split("=")[1],
+      initialVideoId:widget.uri.replaceAll("https://www.youtube.com/watch?v=",""),
       flags: const YoutubePlayerFlags(
         mute: false,
         autoPlay: true,
@@ -136,7 +132,12 @@ class _LecteurVideosState extends State<LecteurVideos> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getVODVideos();
+
+    if(widget.onPlay=="vod"){
+      getVODVideos();
+    }else{
+      iniPlayerYoutube();
+    }
     getVODIteams();
 
     //widget.onPlay == "vod"
@@ -157,7 +158,7 @@ class _LecteurVideosState extends State<LecteurVideos> {
 
   @override
   Widget build(BuildContext context) {
-    //logger.i('message 2002',dataVOD['video_url']);
+    logger.i('message 2002',widget.uri.replaceAll("https://www.youtube.com/watch?v=",""));
     return widget.onPlay == "vod"
         ? Scaffold(
             extendBodyBehindAppBar: true,

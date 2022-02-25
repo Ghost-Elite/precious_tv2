@@ -7,6 +7,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
+import 'lecteurDesEmission.dart';
+import 'listVideoProg.dart';
 class DrawerReplay extends StatefulWidget {
   List<YT_APIPlaylist> ytResultPlaylist = [];
   var dataToLoad;
@@ -45,6 +47,7 @@ class _DrawerReplayState extends State<DrawerReplay> {
   Widget build(BuildContext context) {
     logger.i(' ghost-elite 14 ',widget.urls['allitems'].length);
     return Scaffold(
+      key: _refreshIndicatorKey,
       appBar: AppBar(
         backgroundColor: ColorPalette.appBarColor,
         centerTitle: true,
@@ -142,6 +145,15 @@ class _DrawerReplayState extends State<DrawerReplay> {
       itemBuilder: (context, position) {
        // logger.i('ghost',widget.ytResultPlaylist[position].thumbnail['high']['url']);
         return GestureDetector(
+          onTap: (){
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => ListVideoPrograms(
+                   urls: widget.urls['allitems'][position]['feed_url'],
+                    dataToLoad: widget.dataToLoad,
+                  )),
+                  (Route<dynamic> route) => true);
+          },
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: Container(

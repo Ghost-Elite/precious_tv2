@@ -11,7 +11,8 @@ import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 class ListVideoPrograms extends StatefulWidget {
   var urls;
-  ListVideoPrograms({Key? key,this.urls}) : super(key: key);
+  var dataToLoad;
+  ListVideoPrograms({Key? key,this.urls,this.dataToLoad}) : super(key: key);
 
   @override
   _ListVideoProgramsState createState() => _ListVideoProgramsState();
@@ -47,6 +48,7 @@ class _ListVideoProgramsState extends State<ListVideoPrograms> {
   Widget build(BuildContext context) {
    // logger.i(' ghost-elite 22', dataVOD['allitems'] );
     return Scaffold(
+      key: _refreshIndicatorKey,
       appBar: AppBar(
       backgroundColor: ColorPalette.appBarColor,
       centerTitle: true,
@@ -60,7 +62,10 @@ class _ListVideoProgramsState extends State<ListVideoPrograms> {
         ),
       ),
     ),
-      body: makeItemEmissions(),
+      body: RefreshIndicator(
+        onRefresh: ()=>getVODPrograms(),
+        child: makeItemEmissions(),
+      ),
     );
   }
   Widget makeItemEmissions() {
@@ -80,17 +85,31 @@ class _ListVideoProgramsState extends State<ListVideoPrograms> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    logger.i(' message',dataVOD['allitems'][index]['type']);
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LecteurVideos(
-                                  urls: dataVOD['allitems'][index]['feed_url'],
-                                  reletead: dataVOD['allitems'][index]['relatedItems'],
-                                  title: dataVOD['allitems'][index]['title'],
-                                  onPlay: dataVOD['allitems'][index]['type'],
-                                )),
-                            (Route<dynamic> route) => true);
+                    logger.i(' message 40',dataVOD['allitems'][index]['video_url']);
+                    if(dataVOD['allitems'][index]['type']=="vod"){
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  LecteurVideos(
+                                    urls: dataVOD['allitems'][index]['feed_url'],
+                                    reletead: dataVOD['allitems'][index]['relatedItems'],
+                                    title: dataVOD['allitems'][index]['title'],
+                                    onPlay: dataVOD['allitems'][index]['type'],
+                                  )),
+                              (Route<dynamic> route) => true);
+                    }else{
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  LecteurVideos(
+                                    uri: dataVOD['allitems'][index]['video_url'],
+                                    reletead: dataVOD['allitems'][index]['relatedItems'],
+                                    title: dataVOD['allitems'][index]['title'],
+                                    onPlay: dataVOD['allitems'][index]['type'],
+                                  )),
+                              (Route<dynamic> route) => true);
+                    }
+
                   },
                   child: Stack(
                     children: [

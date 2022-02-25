@@ -21,7 +21,8 @@ class DrawerPage extends StatefulWidget {
   List<YT_APIPlaylist> ytResultPlaylist = [];
   YT_APIPlaylist? ytResults;
   var dataUrl;
-  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl}) : super(key: key);
+  var dataToLoad;
+  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl,this.dataToLoad}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -151,6 +152,7 @@ class _DrawerPageState extends State<DrawerPage> {
                   MaterialPageRoute(builder: (context) => DrawerReplay(
                     ytResultPlaylist: widget.ytResultPlaylist,
                     urls: dataVOD,
+                    dataToLoad: widget.dataToLoad,
                   ),
                   ),
 

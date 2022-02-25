@@ -16,14 +16,14 @@ import 'package:better_player/better_player.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
-  var lien;
+  var lien,urlPrevacy;
   var logger=Logger();
   var dataToLoad;
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  HomePage({Key? key,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist,this.dataToLoad}) : super(key: key);
+  HomePage({Key? key,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist,this.dataToLoad,this.urlPrevacy}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -212,6 +212,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
           lien: widget.lien,
           logger: widget.logger,
           dataUrl: widget.lien['allitems'][0]['feed_url'],
+          dataToLoad: widget.dataToLoad,
         ),
         appBar: AppBar(
           backgroundColor: ColorPalette.appBarColor,

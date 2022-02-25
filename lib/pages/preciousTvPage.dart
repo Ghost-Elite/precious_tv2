@@ -623,6 +623,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                     videoUrl: dataEmis['allitems'][index]['feed_url'],
                     videoItems: dataEmis['allitems'][index]['relatedItems'],
                     title: dataEmis['allitems'][index]['title'],
+                    dataToLoad: widget.dataToLoad,
                     )),
                     (Route<dynamic> route) => true);
           },
