@@ -213,6 +213,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
           logger: widget.logger,
           dataUrl: widget.lien['allitems'][0]['feed_url'],
           dataToLoad: widget.dataToLoad,
+          urlPrevacy: widget.urlPrevacy,
         ),
         appBar: AppBar(
           backgroundColor: ColorPalette.appBarColor,

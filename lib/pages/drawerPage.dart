@@ -15,6 +15,7 @@ import 'package:youtube_api/youtube_api.dart';
 class DrawerPage extends StatefulWidget {
   var lien;
   var logger = Logger();
+  var urlPrevacy;
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
@@ -22,13 +23,14 @@ class DrawerPage extends StatefulWidget {
   YT_APIPlaylist? ytResults;
   var dataUrl;
   var dataToLoad;
-  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl,this.dataToLoad}) : super(key: key);
+  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl,this.dataToLoad,this.urlPrevacy}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
 }
 
 class _DrawerPageState extends State<DrawerPage> {
+
   var data,dataVOD;
   Future<void> getData() async {
     final response = await http.get(Uri.parse(widget.dataUrl));
