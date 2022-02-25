@@ -395,21 +395,21 @@ class _LecteurVideosState extends State<LecteurVideos> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Container(
-                        width: 150,
-                        height: 100,
+                        width: 180,
+                        height: 110,
                         child: CachedNetworkImage(
                           imageUrl: item['allitems'][index]['logo'],
-                          width: 100,
-                          height: 100,
+                          width: 180,
+                          height: 110,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Image.asset(
                             "assets/images/vignete.png",
-                            width: 150,
+                            width: 180,
                             fit: BoxFit.cover,
                           ),
                           errorWidget: (context, url, error) => Image.asset(
                             "assets/images/vignete.png",
-                            width: 150,
+                            width: 180,
                             fit: BoxFit.cover,
                           ),
                         ),

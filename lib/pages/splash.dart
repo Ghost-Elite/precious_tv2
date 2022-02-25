@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_api/youtube_api.dart';
-
+import 'package:ota_update/ota_update.dart';
 import 'package:precious_tv/pages/home.dart';
 import 'package:precious_tv/services/serviceNetwork.dart';
 import 'package:logger/logger.dart';
@@ -37,9 +37,28 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
   String API_CHANEL = 'UCIby2pzNJkvQsbc38shuGTw';
   bool isLoading = false;
+  OtaEvent? currentEvent;
 
-
-
+  Future<void> tryOtaUpdate() async {
+    try {
+      //LINK CONTAINS APK OF FLUTTER HELLO WORLD FROM FLUTTER SDK EXAMPLES
+      OtaUpdate()
+          .execute(
+        'https://dev.acangroup.org/apk/albayanetv.apk',
+        destinationFilename: 'flutter_hello_world.apk',
+        //FOR NOW ANDROID ONLY - ABILITY TO VALIDATE CHECKSUM OF FILE:
+        sha256checksum: 'd6da28451a1e15cf7a75f2c3f151befad3b80ad0bb232ab15c20897e54f21478',
+      )
+          .listen(
+            (OtaEvent event) {
+          setState(() => currentEvent = event);
+        },
+      );
+      // ignore: avoid_catches_without_on_clauses
+    } catch (e) {
+      print('Failed to make OTA update. Details: $e');
+    }
+  }
 
   Future<void>cheked()async {
     getall();
@@ -128,6 +147,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     getall();
     callAPI();
     callAPIPlaylist();
+    tryOtaUpdate();
     //logger.i('message ghost',ytResult[0].title);
     startTime();
   }

@@ -211,6 +211,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
           ytApiPlaylist: widget.ytApiPlaylist,
           lien: widget.lien,
           logger: widget.logger,
+          dataUrl: widget.lien['allitems'][0]['feed_url'],
         ),
         appBar: AppBar(
           backgroundColor: ColorPalette.appBarColor,

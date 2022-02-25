@@ -18,7 +18,7 @@ class VideoRelated extends StatefulWidget {
 }
 
 class _VideoRelatedState extends State<VideoRelated> {
-  var item,data;
+  var item,data,urldata,titles,related,relat;
   var logger=Logger();
   BetterPlayerController? betterPlayerController;
   YoutubePlayerController? _controller;
@@ -68,21 +68,21 @@ class _VideoRelatedState extends State<VideoRelated> {
   );
 
   Future<void> getVODVideos() async {
-    final response = await http.get(Uri.parse(widget.datas));
+    final response = await http.get(Uri.parse(urldata));
     setState(() {
       data = json.decode(response.body);
     });
-    //logger.i(' Ghost-Elite 2022 ',data['video_url']);
+    logger.i(' Ghost-Elite 2022 ',urldata);
     getInitPlayer(data['video_url']);
-   /* if (widget.onPlay == "vod") {
-      getInitPlayer(data['video_url']);
-    } else {
-      iniPlayerYoutube(data['video_url']);
-    }*/
+     /* if (widget.onPlay == "vod") {
+        getInitPlayer(data['video_url']);
+      } else {
+        iniPlayerYoutube(data['video_url']);
+      }*/
     return data;
   }
   Future<void> getVODIteams() async {
-    final response = await http.get(Uri.parse(widget.related));
+    final response = await http.get(Uri.parse( relat));
     setState(() {
       item = json.decode(response.body);
     });
@@ -90,7 +90,7 @@ class _VideoRelatedState extends State<VideoRelated> {
 
     return item;
   }
-  Future<void> FetchRelated() async {
+  /*Future<void> FetchRelated() async {
 
     final response = await http.get(widget.related);
     if (response.statusCode == 200) {
@@ -105,7 +105,7 @@ class _VideoRelatedState extends State<VideoRelated> {
     } else {
       throw Exception();
     }
-  }
+  }*/
   getInitPlayer(String url) {
     BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network, url,
@@ -121,13 +121,17 @@ class _VideoRelatedState extends State<VideoRelated> {
     }
     betterPlayerController!.setBetterPlayerGlobalKey(_betterPlayerKey1);
   }
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    FetchRelated();
+    urldata=widget.datas;
+    titles=widget.title;
+    relat=widget.related;
     getVODVideos();
-
+    getVODIteams();
   }
   @override
   Widget build(BuildContext context) {
@@ -205,7 +209,7 @@ class _VideoRelatedState extends State<VideoRelated> {
             child: Container(
               padding: EdgeInsets.all(10),
               child: Text(
-                "${widget.title}",
+                "${titles}",
                 style: const TextStyle(
                   color: ColorPalette.appYellowColor,
                   fontSize: 13,
@@ -275,9 +279,10 @@ class _VideoRelatedState extends State<VideoRelated> {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
-      padding: const EdgeInsets.all(20),
+      //padding: const EdgeInsets.all(20),
       crossAxisSpacing: 8,
       mainAxisSpacing: 4,
+      padding: EdgeInsets.only(top: 10),
       children:
       List.generate(item == null ? 0 : item['allitems'].length, (index) {
         return Column(
@@ -285,7 +290,13 @@ class _VideoRelatedState extends State<VideoRelated> {
           children: [
             GestureDetector(
               onTap: () {
-
+                setState(() {
+                  urldata=item['allitems'][index]['feed_url'];
+                  related=item['allitems'][index]['relatedItems'];
+                  titles=item['allitems'][index]['title'];
+                });
+                getVODVideos();
+                getVODIteams();
               },
               child: Stack(
                 children: [
@@ -293,21 +304,21 @@ class _VideoRelatedState extends State<VideoRelated> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Container(
-                        width: 150,
-                        height: 100,
+                        width: 180,
+                        height: 110,
                         child: CachedNetworkImage(
                           imageUrl: item['allitems'][index]['logo'],
-                          width: 100,
-                          height: 100,
+                          width: 180,
+                          height: 110,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Image.asset(
                             "assets/images/vignete.png",
-                            width: 150,
+                            width: 180,
                             fit: BoxFit.cover,
                           ),
                           errorWidget: (context, url, error) => Image.asset(
                             "assets/images/vignete.png",
-                            width: 150,
+                            width: 180,
                             fit: BoxFit.cover,
                           ),
                         ),

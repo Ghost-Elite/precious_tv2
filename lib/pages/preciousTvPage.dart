@@ -18,6 +18,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../configs/size_config.dart';
 import 'AllPlayListScreen.dart';
 import 'drawerReplay.dart';
+import 'lecteurDesEmission.dart';
 import 'listVideoProg.dart';
 
 class PreciousTvPage extends StatefulWidget {
@@ -89,6 +90,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       //overflowModalColor: Colors.amberAccent
     ),
   );
+
   Future<void> getData() async {
     final response = await http.get(Uri.parse(widget.dataUrl));
     data = json.decode(response.body);
@@ -150,7 +152,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     dataEmis = json.decode(response.body);
     //getDirect(dataVOD['allitems'][0]['feed_url']);
 
-    //logger.i(' Ghost-Elite 2022 ',dataEmis['allitems']);
+    logger.i(' Ghost-Elite 2022 ',url);
     return dataEmis;
   }
   Future<void> test() async {
@@ -243,10 +245,8 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-  betterPlayerController!.dispose();
+    betterPlayerController!.dispose();
     //betterPlayerController ==null;
-
-
   }
   @override
   void deactivate() {
@@ -270,6 +270,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   Widget build(BuildContext context) {
     //logger.i(' ghost-elite ',dataVOD['allitems'].length);
     //logger.i(' Ghost-Elite 2022 ',data['allitems'][0]['alaune_feed']);
+    //logger.i(' Ghost-Elite 2022 ',dataEmis['allitems']);
     return Scaffold(
       backgroundColor: ColorPalette.appColorWhite,
       body: SafeArea(
@@ -608,21 +609,22 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
           ),
         );
       },
-    ):ListView.builder(
+    ):
+    ListView.builder(
 
       itemCount: dataEmis==null?0: dataEmis['allitems'].length,
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
           onTap: (){
-           /* Navigator.of(context).pushAndRemoveUntil(
+            //logger.i('ghost-elite 2022 killer',dataEmis['allitems'][index]['relatedItems']);
+            Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                    builder: (context) => YtoubePlayerPage(
-                      videoId: widget.ytResult[index].url,
-                      title: widget.ytResult[index].title,
-
-                      ytResult: widget.ytResult, videos: [],
+                    builder: (context) => LecteurDesEmissions(
+                    videoUrl: dataEmis['allitems'][index]['feed_url'],
+                    videoItems: dataEmis['allitems'][index]['relatedItems'],
+                    title: dataEmis['allitems'][index]['title'],
                     )),
-                    (Route<dynamic> route) => true);*/
+                    (Route<dynamic> route) => true);
           },
           child: Padding(
             padding: const EdgeInsets.only(top: 1,bottom: 3),
@@ -698,24 +700,24 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                           alignment: Alignment.topLeft,
                           child: Text(
                             '${dataEmis['allitems'][index]['title']}',
-                            style: GoogleFonts.roboto(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,color: ColorPalette.appBarColor
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,color: ColorPalette.appBarColor
                             ),maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         SizedBox(height: 3,),
-                        /*Container(
-                          margin: EdgeInsets.all(5),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          alignment: Alignment.topLeft,
+                          //margin: EdgeInsets.all(5),
                           child: Text(
-                            '${widget.ytResult[index].description}',
-                            style: GoogleFonts.roboto(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 13.0,),maxLines: 2,
+                            '${dataEmis['allitems'][index]['date']}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 9.0,color: ColorPalette.appColorGrey),maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        )*/
+                        )
                       ],
                     ),
                   )

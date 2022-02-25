@@ -6,7 +6,7 @@ import 'package:precious_tv/pages/home.dart';
 import 'package:precious_tv/pages/splash.dart';
 import 'package:wakelock/wakelock.dart';
 import 'configs/size_config.dart';
-
+import 'package:ota_update/ota_update.dart';
 /*class MyHttpOverrides extends HttpOverrides{
   @override
   HttpClient createHttpClient(SecurityContext context){
@@ -14,6 +14,7 @@ import 'configs/size_config.dart';
       ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
   }
 }*/
+
 
 Future main() async {
   //HttpOverrides.global = new MyHttpOverrides();

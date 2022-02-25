@@ -8,6 +8,8 @@ import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'drawerReplay.dart';
 import 'home.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:logger/logger.dart';
 import 'package:youtube_api/youtube_api.dart';
 class DrawerPage extends StatefulWidget {
@@ -18,14 +20,41 @@ class DrawerPage extends StatefulWidget {
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
   YT_APIPlaylist? ytResults;
-  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults}) : super(key: key);
+  var dataUrl;
+  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
 }
 
 class _DrawerPageState extends State<DrawerPage> {
+  var data,dataVOD;
+  Future<void> getData() async {
+    final response = await http.get(Uri.parse(widget.dataUrl));
+    data = json.decode(response.body);
+    //getDirect(data['allitems'][0]['feed_url']);
 
+    //logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
+    getVODPrograms(data['allitems'][0]['vod_feed']);
+
+    return data;
+  }
+  Future<void> getVODPrograms(String url) async {
+    final response = await http.get(Uri.parse(url));
+    setState(() {
+      dataVOD = json.decode(response.body);
+    });
+    //getDirect(dataVOD['allitems'][0]['feed_url']);
+
+    //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems']);
+    return dataVOD;
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -121,7 +150,7 @@ class _DrawerPageState extends State<DrawerPage> {
                   context,
                   MaterialPageRoute(builder: (context) => DrawerReplay(
                     ytResultPlaylist: widget.ytResultPlaylist,
-
+                    urls: dataVOD,
                   ),
                   ),
 
