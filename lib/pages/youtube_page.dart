@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:precious_tv/pages/ytoubeplayer.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,7 +30,7 @@ class _YoutubePagesState extends State<YoutubePages>{
   new GlobalKey<RefreshIndicatorState>();
 
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
-  String API_CHANEL = 'UCIby2pzNJkvQsbc38shuGTw';
+  String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
   var logger = Logger();
   late PlayerState _playerState;
   late YoutubeMetaData _videoMetaData;
@@ -182,7 +183,14 @@ class _YoutubePagesState extends State<YoutubePages>{
                             color: ColorPalette.appBarColor,
                           ),
                           onPressed: () {
-
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => YtoubePlayerPage(
+                                      videoId: widget.ytResult[0].url,
+                                      title: widget.ytResult[0].title,
+                                      ytResult:widget.ytResult, videos: [],
+                                    )),
+                                    (Route<dynamic> route) => true);
                           },
                         )
                       ],
@@ -210,7 +218,21 @@ class _YoutubePagesState extends State<YoutubePages>{
                             size: 20,
                             color: ColorPalette.appBarColor,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            logger.i('message',widget.ytResultPlaylist[1].thumbnail);
+                            if(widget.ytResultPlaylist !=null || widget.ytResultPlaylist==0){
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => AllPlayListScreen(
+                                      ytResult:widget.ytResultPlaylist[0],
+                                      //apikey: API_Key,
+                                    ),
+                                  ),
+                                      (Route<dynamic> route) => true);
+                            }else{
+                              logger.i('test video');
+                            }
+                          },
                         )
                       ],
                     ),

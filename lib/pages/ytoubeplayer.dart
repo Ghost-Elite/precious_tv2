@@ -59,7 +59,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
   late YoutubePlayerController _controller;
 
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
-  String API_CHANEL = 'UCIby2pzNJkvQsbc38shuGTw';
+  String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
 
   late PlayerState _playerState;
   late YoutubeMetaData _videoMetaData;

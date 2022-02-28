@@ -7,11 +7,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../utils/constants.dart';
 import 'AllPlayListScreen.dart';
+import 'listVideoProg.dart';
 class ReplayPage extends StatefulWidget {
   List<YT_APIPlaylist> ytResultPlaylist = [];
   YT_APIPlaylist? ytResult;
   var dataToLoad;
-  ReplayPage({Key? key,required this.ytResultPlaylist,this.ytResult,this.dataToLoad}) : super(key: key);
+  var dataUrl;
+  ReplayPage({Key? key,required this.ytResultPlaylist,this.ytResult,this.dataToLoad,this.dataUrl}) : super(key: key);
 
   @override
   _ReplayPageState createState() => _ReplayPageState();
@@ -23,6 +25,27 @@ class _ReplayPageState extends State<ReplayPage> {
   GlobalKey<RefreshIndicatorState>();
   var logger =Logger();
   var data;
+  var datas,dataVOD;
+  Future<void> getDatas() async {
+    final response = await http.get(Uri.parse(widget.dataUrl));
+    datas = json.decode(response.body);
+    //getDirect(data['allitems'][0]['feed_url']);
+
+    //logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
+    getVODPrograms(datas['allitems'][0]['vod_feed']);
+
+    return datas;
+  }
+  Future<void> getVODPrograms(String url) async {
+    final response = await http.get(Uri.parse(url));
+    setState(() {
+      dataVOD = json.decode(response.body);
+    });
+    //getDirect(dataVOD['allitems'][0]['feed_url']);
+
+    //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems']);
+    return dataVOD;
+  }
   Future<List> getData() async {
     final response = await http.get(Uri.parse("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId="+widget.ytResult!.id+"&maxResults=10&key=AIzaSyC3Oj2o7fWNXEGcGIkiqVQPTRPVnzI43Wo"));
     data = json.decode(response.body);
@@ -44,6 +67,7 @@ class _ReplayPageState extends State<ReplayPage> {
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) => _refreshIndicatorKey.currentState?.show());
     getData();
+    getDatas();
   }
 
   @override
@@ -142,16 +166,15 @@ class _ReplayPageState extends State<ReplayPage> {
           crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3),
       physics: ClampingScrollPhysics(),
       itemBuilder: (context, position) {
-        logger.i('ghost',widget.ytResultPlaylist[position].thumbnail['high']['url']);
+        //logger.i('ghost',widget.ytResultPlaylist[position].thumbnail['high']['url']);
         return GestureDetector(
           onTap: (){
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (context) => AllPlayListScreen(
-                    ytResult:widget.ytResultPlaylist[position],
-                    //apikey: API_Key,
-                  ),
-                ),
+                    builder: (context) => ListVideoPrograms(
+                      urls: dataVOD['allitems'][position]['feed_url'],
+                      dataToLoad: widget.dataToLoad,
+                    )),
                     (Route<dynamic> route) => true);
           },
           child: Padding(
@@ -169,7 +192,7 @@ class _ReplayPageState extends State<ReplayPage> {
                         borderRadius:  BorderRadius.circular(10),
                         child: Container(
                           child: CachedNetworkImage(
-                            imageUrl: widget.ytResultPlaylist[position].thumbnail['high']['url'],
+                            imageUrl: dataVOD['allitems'][position]['logo'],
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Image.asset(
                               "assets/images/vignete.png",
@@ -196,7 +219,7 @@ class _ReplayPageState extends State<ReplayPage> {
                         ),
                       ),
                       Text(
-                        widget.ytResultPlaylist[position].title,
+                        dataVOD['allitems'][position]['title'],
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
@@ -215,7 +238,7 @@ class _ReplayPageState extends State<ReplayPage> {
           ),
         );
       },
-      itemCount: widget.ytResultPlaylist.length,
+      itemCount:dataVOD==null?0: dataVOD['allitems'].length,
     );
   }
 }

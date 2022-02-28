@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
+import 'AllPlayListScreen.dart';
 import 'lecteurDesEmission.dart';
 import 'listVideoProg.dart';
 class DrawerReplay extends StatefulWidget {
@@ -74,6 +75,21 @@ class _DrawerReplayState extends State<DrawerReplay> {
       itemBuilder: (context, position) {
         logger.i('ghost',widget.ytResultPlaylist[position].thumbnail['high']['url']);
         return GestureDetector(
+          onTap: (){
+            logger.i('message',widget.ytResultPlaylist[1].thumbnail);
+            if(widget.ytResultPlaylist !=null || widget.ytResultPlaylist==0){
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => AllPlayListScreen(
+                      ytResult:widget.ytResultPlaylist[position],
+                      //apikey: API_Key,
+                    ),
+                  ),
+                      (Route<dynamic> route) => true);
+            }else{
+              logger.i('test video');
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: Container(

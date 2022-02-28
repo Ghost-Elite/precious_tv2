@@ -11,6 +11,8 @@ import 'package:youtube_api_v3/youtube_api_v3.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../configs/size_config.dart';
+
 
 class youtubeplayerListPage extends StatefulWidget {
   String url,titre,image,desc;
@@ -142,14 +144,15 @@ class _youtubeplayerListPageState extends State<youtubeplayerListPage> {
                     ),
                     card(),
                     const SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     videoSimilaire(),
                     Expanded(
                         child: GridView.count(
-                          crossAxisCount: 2,
+                          scrollDirection: Axis.vertical,
+                          crossAxisCount: 2 ,
                           shrinkWrap: true,
-                          padding: const EdgeInsets.all(15),
+                          padding: EdgeInsets.all(10),
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 4,
                           children: List.generate(widget.data==null?0:widget.data["items"].length, (index) {
@@ -198,9 +201,7 @@ class _youtubeplayerListPageState extends State<youtubeplayerListPage> {
                                     ],
                                   ),
                                 ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
+
                                 Expanded(
                                   child: Container(
                                     margin: const EdgeInsets.fromLTRB(20, 0, 10, 0),
@@ -259,12 +260,15 @@ class _youtubeplayerListPageState extends State<youtubeplayerListPage> {
       ],
     );
   }
-
   Widget card() {
     return Container(
-      width: double.infinity,
-      height: 40,
-      color: Colors.white,
+      width: SizeConfi.screenWidth,
+      height: SizeConfi.screenHeight! / 20,
+      decoration: const BoxDecoration(
+          color: ColorPalette.appBarColor,
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -275,7 +279,7 @@ class _youtubeplayerListPageState extends State<youtubeplayerListPage> {
               child: Text(
                 "${tite}",
                 style: const TextStyle(
-                  color: ColorPalette.appBarColor,
+                  color: ColorPalette.appYellowColor,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   fontFamily: "helvetica",
@@ -289,4 +293,5 @@ class _youtubeplayerListPageState extends State<youtubeplayerListPage> {
       ),
     );
   }
+
 }

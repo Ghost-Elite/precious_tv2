@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   List<YT_APIPlaylist> ytResultPlaylist = [];
   bool isLoadingPlaylist = true;
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
-  String API_CHANEL = 'UCIby2pzNJkvQsbc38shuGTw';
+  String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
   bool isLoading = false;
   OtaEvent? currentEvent;
 

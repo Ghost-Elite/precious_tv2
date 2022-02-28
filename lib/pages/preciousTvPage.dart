@@ -335,19 +335,32 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                           color: ColorPalette.appBarColor,
                         ),
                         onPressed: () {
+                          logger.i('ghost-elite',dataEmis['allitems'][0]['feed_url']);
+                          if(widget.dataToLoad=="youtube"){
+                            Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => YtoubePlayerPage(
+                                    videoId: widget.ytResult[0].url, videos: [], ytResult: widget.ytResult,
+                                    title: widget.ytResult[0].title,
+                                    dataUrls: widget.dataUrl,
+                                    url: dataEmis['allitems'][0]['feed_url'],
 
-                          Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => YtoubePlayerPage(
-                                  videoId: widget.ytResult[0].url, videos: [], ytResult: widget.ytResult,
-                                  title: widget.ytResult[0].title,
-                                  dataUrls: widget.dataUrl,
-                                  url: dataEmis['allitems'][0]['feed_url'],
+                                    //apikey: API_Key,
+                                  ),
+                                )
+                            );
+                          }else{
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => LecteurDesEmissions(
+                                      videoUrl: dataEmis['allitems'][0]['feed_url'],
+                                      videoItems: dataEmis['allitems'][0]['relatedItems'],
+                                      title: dataEmis['allitems'][0]['title'],
+                                      dataToLoad: widget.dataToLoad,
+                                    )),
+                                    (Route<dynamic> route) => true);
+                          }
 
-                                  //apikey: API_Key,
-                                ),
-                              )
-                          );
                         },
                       )
                     ],
