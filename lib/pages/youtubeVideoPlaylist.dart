@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:precious_tv/pages/youtubeEmisions.dart';
 import 'package:precious_tv/pages/ytoubeplayer.dart';
 import 'package:precious_tv/utils/constants.dart';
 import 'package:youtube_api/youtube_api.dart';
@@ -187,14 +188,13 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                                               color: ColorPalette.appBarColor),
                                         )),
                                     onTap: () {
-                                      /*Navigator.of(context).push(
+                                      Navigator.of(context).push(
                                         MaterialPageRoute(
-                                            builder: (context) => ReplayAlBayane(
-                                              listChannelsbygroup: widget.listChannelsbygroup,
-                                              apimalikia: apimalikia,
+                                            builder: (context) => YoutubeEmisionPage(
+                                              ytResultPlaylist: ytResultPlaylist,
                                             )
                                         ),
-                                      );*/
+                                      );
                                       var  logger = Logger();
                                     },
                                   )
@@ -306,31 +306,34 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
                   margin: EdgeInsets.only(left: 5, right: 5),
                   child: Column(
                     children: [
-                      Stack(
-                        children: [
-                          CachedNetworkImage(
-                            height: 110,
-                            width: MediaQuery.of(context).size.width,
-                            imageUrl: ytResult[position].thumbnail['medium']
-                            ['url'],
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Image.asset(
-                              "assets/images/vignete.png",
-                              fit: BoxFit.cover,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Stack(
+                          children: [
+                            CachedNetworkImage(
                               height: 120,
-                              width: 120,
-                              //color: colorPrimary,
+                              width: MediaQuery.of(context).size.width,
+                              imageUrl: ytResult[position].thumbnail['medium']
+                              ['url'],
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Image.asset(
+                                "assets/images/vignete.png",
+                                fit: BoxFit.cover,
+                                height: 120,
+                                width: 120,
+                                //color: colorPrimary,
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  Image.asset(
+                                    "assets/images/vignete.png",
+                                    fit: BoxFit.cover,
+                                    height: 120,
+                                    width: 120,
+                                    //color: colorPrimary,
+                                  ),
                             ),
-                            errorWidget: (context, url, error) =>
-                                Image.asset(
-                                  "assets/images/vignete.png",
-                                  fit: BoxFit.cover,
-                                  height: 120,
-                                  width: 120,
-                                  //color: colorPrimary,
-                                ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Container(
                         child: Flexible(

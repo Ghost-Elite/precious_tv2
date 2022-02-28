@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:precious_tv/pages/prevacy_page.dart';
 import 'package:precious_tv/pages/replayPage.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:precious_tv/pages/youtubeVideoPlaylist.dart';
 import '../configs/size_config.dart';
 import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'aboutPage.dart';
 import 'drawerReplay.dart';
 import 'home.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +18,8 @@ import 'package:youtube_api/youtube_api.dart';
 class DrawerPage extends StatefulWidget {
   var lien;
   var logger = Logger();
-  var urlPrevacy;
+  var urlPrevacy,appfburl;
+  var appdescription;
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
@@ -23,7 +27,7 @@ class DrawerPage extends StatefulWidget {
   YT_APIPlaylist? ytResults;
   var dataUrl;
   var dataToLoad;
-  DrawerPage({Key? key,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl,this.dataToLoad,this.urlPrevacy}) : super(key: key);
+  DrawerPage({Key? key,this.appfburl,this.appdescription,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl,this.dataToLoad,this.urlPrevacy}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -52,14 +56,17 @@ class _DrawerPageState extends State<DrawerPage> {
     //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems']);
     return dataVOD;
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getData();
+
   }
   @override
   Widget build(BuildContext context) {
+    widget.logger.i(' Ghost-Elite ',  widget.appfburl);
     return Drawer(
       child: Container(
         width: SizeConfi.screenWidth,
@@ -228,91 +235,139 @@ class _DrawerPageState extends State<DrawerPage> {
               ),
             ),
             SizedBox(height: 100),
-            ListTile(
+            GestureDetector(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutPage(
+                    appdescription: widget.appdescription,
+                  ),
+                  ),
 
-              leading: IconButton(
-                icon: const FaIcon(
-                  FontAwesomeIcons.facebook,
-                  size: 28,
-                  color: ColorPalette.appColorWhite,
+                );
+              },
+              child: GestureDetector(
+                onTap: ()=>_launchURL(),
+                child: ListTile(
+
+                  leading: IconButton(
+                    icon: const FaIcon(
+                      FontAwesomeIcons.facebook,
+                      size: 28,
+                      color: ColorPalette.appColorWhite,
+                    ),
+                    onPressed: (){},
+                  ),
+                  title:  Text(
+                    "Facebook",
+                    style: GoogleFonts.roboto(
+                        color: ColorPalette.appColorWhite,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12
+                    ),
+                  ),
+                  trailing: IconButton(
+                    icon: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 17,
+                        color: ColorPalette.appColorWhite
+                    ),
+                    onPressed: () { },
+                  ),
                 ),
-                onPressed: () { },
-              ),
-              title:  Text(
-                "Facebook",
-                style: GoogleFonts.roboto(
-                    color: ColorPalette.appColorWhite,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12
-                ),
-              ),
-              trailing: IconButton(
-                icon: const FaIcon(
-                    FontAwesomeIcons.chevronRight,
-                    size: 17,
-                    color: ColorPalette.appColorWhite
-                ),
-                onPressed: () { },
               ),
             ),
-            ListTile(
+            GestureDetector(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PrevacyPage(
+                    urlPrevacy: widget.urlPrevacy,
+                  ),
+                  ),
 
-              leading: IconButton(
-                icon: const FaIcon(
-                  FontAwesomeIcons.lock,
-                  size: 28,
-                  color: ColorPalette.appColorWhite,
-                ),
-                onPressed: () { },
-              ),
-              title:  Text(
-                "privacy policy",
-                style: GoogleFonts.roboto(
+                );
+              },
+              child: ListTile(
+                leading: IconButton(
+                  icon: const FaIcon(
+                    FontAwesomeIcons.lock,
+                    size: 28,
                     color: ColorPalette.appColorWhite,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12
+                  ),
+                  onPressed: () { },
                 ),
-              ),
-              trailing: IconButton(
-                icon: const FaIcon(
-                    FontAwesomeIcons.chevronRight,
-                    size: 17,
-                    color: ColorPalette.appColorWhite
+                title:  Text(
+                  "privacy policy",
+                  style: GoogleFonts.roboto(
+                      color: ColorPalette.appColorWhite,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12
+                  ),
                 ),
-                onPressed: () { },
+                trailing: IconButton(
+                  icon: const FaIcon(
+                      FontAwesomeIcons.chevronRight,
+                      size: 17,
+                      color: ColorPalette.appColorWhite
+                  ),
+                  onPressed: () { },
+                ),
               ),
             ),
-            ListTile(
+            GestureDetector(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutPage(
+                    appdescription: widget.appdescription,
+                  ),
+                  ),
 
-              leading: IconButton(
-                icon: const FaIcon(
-                  FontAwesomeIcons.exclamationCircle,
-                  size: 28,
-                  color: ColorPalette.appColorWhite,
-                ),
-                onPressed: () { },
-              ),
-              title:  Text(
-                "About",
-                style: GoogleFonts.roboto(
+                );
+              },
+              child: ListTile(
+
+                leading: IconButton(
+                  icon: const FaIcon(
+                    FontAwesomeIcons.exclamationCircle,
+                    size: 28,
                     color: ColorPalette.appColorWhite,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12
+                  ),
+                  onPressed: () { },
                 ),
-              ),
-              trailing: IconButton(
-                icon: const FaIcon(
-                    FontAwesomeIcons.chevronRight,
-                    size: 17,
-                    color: ColorPalette.appColorWhite
+                title:  Text(
+                  "About",
+                  style: GoogleFonts.roboto(
+                      color: ColorPalette.appColorWhite,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12
+                  ),
                 ),
-                onPressed: () { },
+                trailing: IconButton(
+                  icon: const FaIcon(
+                      FontAwesomeIcons.chevronRight,
+                      size: 17,
+                      color: ColorPalette.appColorWhite
+                  ),
+                  onPressed: () { },
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+  void _launchURL() async =>
+      await canLaunch(widget.appfburl) ? await launch(widget.appfburl) : throw 'Could not launch ${widget.appfburl}';
+
+  launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceWebView: true);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
 

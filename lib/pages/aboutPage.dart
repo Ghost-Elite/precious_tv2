@@ -1,40 +1,38 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../configs/size_config.dart';
 import '../utils/constants.dart';
-class PrevacyPage extends StatefulWidget {
-  var urlPrevacy;
-  PrevacyPage({Key? key,this.urlPrevacy}) : super(key: key);
+class AboutPage extends StatefulWidget {
+  var appdescription;
+  AboutPage({Key? key,this.appdescription}) : super(key: key);
 
   @override
-  _PrevacyPageState createState() => _PrevacyPageState();
+  _AboutPageState createState() => _AboutPageState();
 }
 
-class _PrevacyPageState extends State<PrevacyPage> {
+class _AboutPageState extends State<AboutPage> {
   var logger=Logger();
   var data;
-  Future<void> getPrevacy() async {
-    final response = await http.get(Uri.parse(widget.urlPrevacy));
+  Future<void> getAbout() async {
+    final response = await http.get(Uri.parse(widget.appdescription));
     setState(() {
       data = json.decode(response.body);
     });
-    logger.i(' Ghost-Elite 2022 ',data['app_privacy']);
+    logger.i(' Ghost-Elite 2022 ',data['app_description']);
     return data;
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPrevacy();
+    getAbout();
   }
   @override
   Widget build(BuildContext context) {
-    //logger.i(' ghost-elite ',widget.urlPrevacy);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorPalette.appBarColor,
@@ -63,11 +61,11 @@ class _PrevacyPageState extends State<PrevacyPage> {
     );
   }
   Widget Prevacy(){
-    return data!=null && data['app_privacy']!=0? Card(
+    return data!=null && data['app_description']!=0? Card(
       child: Container(
         padding: EdgeInsets.all(10),
         width: SizeConfi.screenWidth,
-        child: HtmlWidget('${data['app_privacy']}'),
+        child: HtmlWidget('${data['app_description']}'),
       ),
     ):Container();
   }

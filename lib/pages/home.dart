@@ -16,6 +16,7 @@ import 'package:better_player/better_player.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
+  var appdescription,appfburl;
   var lien,urlPrevacy;
   var logger=Logger();
   var dataToLoad;
@@ -23,7 +24,7 @@ class HomePage extends StatefulWidget {
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  HomePage({Key? key,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist,this.dataToLoad,this.urlPrevacy}) : super(key: key);
+  HomePage({Key? key,this.appfburl,this.appdescription,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist,this.dataToLoad,this.urlPrevacy}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -174,7 +175,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
 
   @override
   Widget build(BuildContext context) {
-    //widget.logger.i(' Ghost-Elite ',_isConnected == true ? 'Connected' : 'Not Connected',)
+    //widget.logger.i(' Ghost-Elite ', widget.urlPrevacy);
     //WidgetsBinding.instance?.addPostFrameCallback((_) => executeAfterWholeBuildProcess());
     var tabBarItem = TabBar(
       labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
@@ -214,6 +215,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
           dataUrl: widget.lien['allitems'][0]['feed_url'],
           dataToLoad: widget.dataToLoad,
           urlPrevacy: widget.urlPrevacy,
+          appdescription: widget.appdescription,
+          appfburl: widget.appfburl,
         ),
         appBar: AppBar(
           backgroundColor: ColorPalette.appBarColor,

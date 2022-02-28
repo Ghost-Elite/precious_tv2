@@ -40,7 +40,7 @@ class _YoutubeChannelScreenState extends State<YoutubeChannelScreen> with Automa
   String? lien;
   bool isLoadingPlaylist = true;
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
-  String API_CHANEL = 'UCIby2pzNJkvQsbc38shuGTw';
+  String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
   Color bg = const Color(0xFFEBEBEB);
   Future<void> callAPI() async {
     print('UI callled');
@@ -119,6 +119,7 @@ class _YoutubeChannelScreenState extends State<YoutubeChannelScreen> with Automa
 
   Widget makeItemVideos() {
     return GridView.builder(
+      padding: EdgeInsets.all(10),
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -145,32 +146,35 @@ class _YoutubeChannelScreenState extends State<YoutubeChannelScreen> with Automa
                   margin: const EdgeInsets.only(left: 5, right: 5),
                   child: Column(
                     children: [
-                      Stack(
-                        children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Stack(
+                          children: [
 
-                          CachedNetworkImage(
-                            height: 110,
-                            width: MediaQuery.of(context).size.width,
-                            imageUrl:  ytResult[position].thumbnail['medium']
-                            ['url'],
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Image.asset(
-                              "assets/images/vignete.png",
+                            CachedNetworkImage(
+                              height: 110,
+                              width: MediaQuery.of(context).size.width,
+                              imageUrl:  ytResult[position].thumbnail['medium']
+                              ['url'],
                               fit: BoxFit.cover,
-                              height: 120,
-                              width: 120,
-                              //color: colorPrimary,
+                              placeholder: (context, url) => Image.asset(
+                                "assets/images/vignete.png",
+                                fit: BoxFit.cover,
+                                height: 120,
+                                width: 120,
+                                //color: colorPrimary,
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                "assets/images/vignete.png",
+                                fit: BoxFit.cover,
+                                height: 120,
+                                width: 120,
+                                //color: colorPrimary,
+                              ),
                             ),
-                            errorWidget: (context, url, error) => Image.asset(
-                              "assets/images/vignete.png",
-                              fit: BoxFit.cover,
-                              height: 120,
-                              width: 120,
-                              //color: colorPrimary,
-                            ),
-                          ),
 
-                        ],
+                          ],
+                        ),
                       ),
                       Container(
                         child: Flexible(
@@ -204,7 +208,7 @@ class _YoutubeChannelScreenState extends State<YoutubeChannelScreen> with Automa
                     decoration: const BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage(
-                                "assets/images/play.png"))),
+                                "assets/images/jouer.png"))),
                   ),
                 ),
               )

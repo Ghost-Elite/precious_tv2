@@ -59,7 +59,6 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
       print('Failed to make OTA update. Details: $e');
     }
   }
-
   Future<void>cheked()async {
     getall();
     logger.i('message 200');
@@ -222,6 +221,9 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
           ytResultPlaylist: ytResultPlaylist,
           dataToLoad: dataUrl['ACAN_API'][0]['app_data_toload'],
           urlPrevacy: dataUrl['ACAN_API'][0]['app_privacy_policy'],
+          appdescription: dataUrl['ACAN_API'][0]['app_description'],
+          appfburl: dataUrl['ACAN_API'][0]['app_fb_url'],
+
         ),
         ),
             (Route<dynamic> route) => false,

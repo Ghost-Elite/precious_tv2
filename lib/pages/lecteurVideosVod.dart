@@ -158,7 +158,7 @@ class _LecteurVideosState extends State<LecteurVideos> {
 
   @override
   Widget build(BuildContext context) {
-    logger.i('message 2002',widget.uri.replaceAll("https://www.youtube.com/watch?v=",""));
+    //logger.i('message 2002',widget.uri.replaceAll("https://www.youtube.com/watch?v=",""));
     return widget.onPlay == "vod"
         ? Scaffold(
             extendBodyBehindAppBar: true,
