@@ -70,9 +70,14 @@ class _ReplayPageState extends State<ReplayPage> {
     getDatas();
   }
 
+  Future<void> _asyncFunctionAfterBuild() async {
+    setState(() {
+      print("check if i'm printed several times!");
+    });
+  }
   @override
   Widget build(BuildContext context) {
-
+    _asyncFunctionAfterBuild();
     return Scaffold(
       key: _refreshIndicatorKey,
       body: makeItemEmissions(),

@@ -13,7 +13,7 @@ import 'drawerPage.dart';
 import 'package:logger/logger.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:better_player/better_player.dart';
-import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
+
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
   var appdescription,appfburl;
@@ -36,12 +36,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
   GlobalKey _betterPlayerKey = GlobalKey();
   GlobalKey _scaffoldKey = GlobalKey();
   BetterPlayerController? betterPlayerController;
+
   late var betterPlayerConfiguration = BetterPlayerConfiguration(
     autoPlay: true,
     looping: false,
     fullScreenByDefault: false,
     allowedScreenSleep: false,
-    autoDetectFullscreenAspectRatio: true,
+    //autoDetectFullscreenAspectRatio: true,
     translations: [
       BetterPlayerTranslations(
         languageCode: "fr",
@@ -133,18 +134,19 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
     super.initState();
     //_checkInternetConnection();
     test();
-    //widget.logger.i(' ghost-elite 221 ',widget.ytResult[0].title);
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      tabController = TabController(length: 3, vsync: this);
-    });
-    widget.logger.i("initState");
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      widget.logger.i("WidgetsBinding");
-    });
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      print("SchedulerBinding");
-    });
 
+    WidgetsBinding.instance!.addPostFrameCallback(
+          (_) {
+        setState(() {
+          tabController = TabController(length: 3, vsync: this);
+        });
+      },
+    );
+  }
+  Future<void> _asyncFunctionAfterBuild() async {
+    setState(() {
+      print("check if i'm printed several times!");
+    });
   }
   @override
   void dispose() {
@@ -175,8 +177,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
 
   @override
   Widget build(BuildContext context) {
-    //widget.logger.i(' Ghost-Elite ', widget.urlPrevacy);
-    //WidgetsBinding.instance?.addPostFrameCallback((_) => executeAfterWholeBuildProcess());
+    _asyncFunctionAfterBuild();
     var tabBarItem = TabBar(
       labelStyle: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold),
       labelColor: ColorPalette.appBarColor,

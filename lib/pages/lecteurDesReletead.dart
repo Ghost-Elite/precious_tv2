@@ -28,7 +28,7 @@ class _VideoRelatedState extends State<VideoRelated> {
     looping: false,
     fullScreenByDefault: false,
     allowedScreenSleep: false,
-    autoDetectFullscreenAspectRatio: true,
+    //autoDetectFullscreenAspectRatio: true,
     translations: [
       BetterPlayerTranslations(
         languageCode: "fr",

@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:precious_tv/pages/home.dart';
 import 'package:precious_tv/pages/splash.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'configs/size_config.dart';
 import 'package:ota_update/ota_update.dart';
 /*class MyHttpOverrides extends HttpOverrides{
@@ -22,11 +23,13 @@ Future main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
 
+
   ));
+  final stateController = StateController(10);
   runApp(
 
       LayoutBuilder(   // Add LayoutBuilder
-          builder: (context, constraints) {
+          builder: (context, constraints,) {
             return OrientationBuilder(   // Add OrientationBuilder
                 builder: (context, orientation) {
                   SizeConfi().init(constraints, orientation); // SizeConfig initialization
@@ -51,7 +54,7 @@ Future main() async {
                         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
                       }),
                     ),
-                    home: SplashScreen(),
+                    home: ProviderScope(child: SplashScreen(),)
                   );
                 }
             );

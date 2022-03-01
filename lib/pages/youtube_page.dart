@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:precious_tv/pages/ytoubeplayer.dart';
 import 'package:youtube_api/youtube_api.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../configs/size_config.dart';
@@ -25,15 +25,13 @@ class YoutubePages extends StatefulWidget {
 
 class _YoutubePagesState extends State<YoutubePages>{
   GlobalKey _scaffoldKey1 = GlobalKey();
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   new GlobalKey<RefreshIndicatorState>();
 
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
   String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
   var logger = Logger();
-  late PlayerState _playerState;
-  late YoutubeMetaData _videoMetaData;
   double _volume = 100;
   bool _muted = false;
   bool _isPlayerReady = false;
@@ -58,7 +56,7 @@ class _YoutubePagesState extends State<YoutubePages>{
     lien =widget.ytResult[0].url;
     tite=widget.ytResult[0].title;
     //test=widget.ytResult[0].duration.toString();
-    _controller = YoutubePlayerController(
+    /*_controller = YoutubePlayerController(
       initialVideoId: lien!.split("=")[1],
       flags: const YoutubePlayerFlags(
         mute: false,
@@ -71,39 +69,64 @@ class _YoutubePagesState extends State<YoutubePages>{
 
       ),
 
-    )..addListener(listener);
-    _videoMetaData = const YoutubeMetaData();
-    _playerState = PlayerState.unknown;
-    //tite = widget.title;
-    logger.i("initState");
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      logger.i("WidgetsBinding");
-    });
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      logger.i("SchedulerBinding");
-    });
-  }
-  void listener() {
-    if (_isPlayerReady && mounted && _controller.value.isFullScreen) {
-      setState(() {
-        _playerState = _controller.value.playerState;
-        _videoMetaData = _controller.metadata;
-      });
-    }
+    )..addListener(listener);*/
 
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      setState(() {
+
+        _controller = YoutubePlayerController(
+
+          initialVideoId: lien!.split("=")[1],
+            params: const YoutubePlayerParams(
+            mute: false,
+            autoPlay: true,
+            desktopMode: true,
+            showFullscreenButton: true,
+            showControls: true,
+            enableCaption: true
+
+          ),
+
+
+        );
+
+        _controller!.onEnterFullscreen = () {
+          SystemChrome.setPreferredOrientations([
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight,
+          ]);
+
+        };
+        _controller!.onExitFullscreen = () {
+
+        };
+      });
+    });
   }
+
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _controller.dispose();
+    _controller!.close();
+
+    //_controller==null;
+
   }
   @override
   void deactivate() {
     // Pauses video while navigating to next page.
-    _controller.pause();
+    _controller!.pause();
+    //_controller==null;
     super.deactivate();
   }
+  Future<void> _asyncFunctionAfterBuild() async {
+    setState(() {
+      print("check if i'm printed several times!");
+    });
+  }
+
   @override
   void didUpdateWidget(covariant YoutubePages oldWidget) {
     // TODO: implement didUpdateWidget
@@ -111,7 +134,136 @@ class _YoutubePagesState extends State<YoutubePages>{
   }
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
+    _asyncFunctionAfterBuild();
+    const player = YoutubePlayerIFrame(
+      aspectRatio: 16 / 9,
+
+    );
+    return YoutubePlayerControllerProvider(
+
+      controller: _controller!,
+      child: Scaffold(
+        key: _refreshIndicatorKey,
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(top: 5),
+                      width: SizeConfi.screenWidth,
+                      height: 180,
+                      color: Colors.black,
+                      child: _controller !=null? player:Container(),
+                    ),
+                    Container(
+                      width: SizeConfi.screenWidth,
+                      height: SizeConfi.screenHeight! / 20,
+                      decoration: const BoxDecoration(
+                          color: ColorPalette.appBarColor,
+                          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16),bottomRight: Radius.circular(16))
+                      ),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Container(
+                              margin: EdgeInsets.only(left: 9,right: 8),
+                              alignment: Alignment.center,
+                              child: Text('${tite} ',style: GoogleFonts.rowdies(fontSize: 13,fontWeight: FontWeight.bold,color: ColorPalette.appYellowColor),maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(right: 5,left: 5),
+                          child: Text(
+                            ' Latest Videos ',
+                            style: GoogleFonts.roboto(
+                                fontSize: 13,
+                                color: ColorPalette.appBarColor,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.playlist_add,
+                            size: 20,
+                            color: ColorPalette.appBarColor,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => YtoubePlayerPage(
+                                      videoId: widget.ytResult[0].url,
+                                      title: widget.ytResult[0].title,
+                                      ytResult:widget.ytResult, videos: [],
+                                    )),
+                                    (Route<dynamic> route) => true);
+                          },
+                        )
+                      ],
+                    ),
+                    Container(
+                        width: SizeConfi.screenWidth,
+                        height: 200,
+                        child: listVideos()),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(right: 5,left: 5),
+                          child: Text(
+                            'Playlists',
+                            style: GoogleFonts.roboto(
+                                fontSize: 13,
+                                color: ColorPalette.appBarColor,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.playlist_add,
+                            size: 20,
+                            color: ColorPalette.appBarColor,
+                          ),
+                          onPressed: () {
+                            logger.i('message',widget.ytResultPlaylist[1].thumbnail);
+                            if(widget.ytResultPlaylist !=null || widget.ytResultPlaylist==0){
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => AllPlayListScreen(
+                                      ytResult:widget.ytResultPlaylist[0],
+                                      //apikey: API_Key,
+                                    ),
+                                  ),
+                                      (Route<dynamic> route) => true);
+                            }else{
+                              logger.i('test video');
+                            }
+                          },
+                        )
+                      ],
+                    ),
+                    makeMostPopular()
+
+                  ],
+                ),
+              )
+
+            ],
+          ),
+        ),
+      ),
+    )
+
+      /*YoutubePlayerBuilder(
       onExitFullScreen: () {
         // The player forces portraitUp after exiting fullscreen. This overrides the behaviour.
         SystemChrome.setPreferredOrientations(
@@ -246,7 +398,7 @@ class _YoutubePagesState extends State<YoutubePages>{
           ),
         ),
       ),
-    );
+    )*/;
   }
   Widget listVideos(){
     return ListView.builder(
@@ -259,7 +411,7 @@ class _YoutubePagesState extends State<YoutubePages>{
               uri = widget.ytResult[index].url;
               //lien = widget.ytResult[index].url;
             });
-            _controller.load(widget.ytResult[index].url.split("=")[1]);
+            _controller!.load(widget.ytResult[index].url.split("=")[1]);
             tite = widget.ytResult[index].title;
           },
           child: Padding(

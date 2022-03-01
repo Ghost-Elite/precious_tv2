@@ -7,14 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
-import 'package:better_player/better_player.dart';
 import 'package:http/http.dart' as http;
 import 'package:precious_tv/pages/ytoubeplayer.dart';
 import 'package:precious_tv/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-
+import 'package:better_player/better_player.dart';
 import '../configs/size_config.dart';
 import 'AllPlayListScreen.dart';
 import 'drawerReplay.dart';
@@ -43,6 +42,8 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   BetterPlayerController? betterPlayerController;
   late final bool  videoLoading;
   AnimationController? animationController;
+  bool _buttonEnabled = false;
+  int playBackTime = 0;
   var data;
   var datas;
   var dataVOD;
@@ -52,7 +53,6 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     looping: false,
     fullScreenByDefault: false,
     allowedScreenSleep: false,
-    autoDetectFullscreenAspectRatio: true,
     translations: [
       BetterPlayerTranslations(
         languageCode: "fr",
@@ -202,7 +202,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       BetterPlayerDataSourceType.network,
       directUrl,
       liveStream: true,
-      asmsTrackNames: ["3G 360p", "SD 480p", "HD 1080p"],
+      //asmsTrackNames: ["3G 360p", "SD 480p", "HD 1080p"],
       /*notificationConfiguration: BetterPlayerNotificationConfiguration(
             showNotification: true,
             title: tvTitle,
@@ -219,6 +219,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
     }
     betterPlayerController!.setBetterPlayerGlobalKey(_betterPlayerKey);
   }
+
 
   @override
   void initState() {
@@ -241,7 +242,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
 
 
   }
-  @override
+/*  @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
@@ -252,9 +253,9 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    betterPlayerController!.dispose();
+    betterPlayerController!.pause();
     betterPlayerController ==null;
-  }
+  }*/
   @override
   void didUpdateWidget(PreciousTvPage oldWidget) {
     super.didUpdateWidget(oldWidget);

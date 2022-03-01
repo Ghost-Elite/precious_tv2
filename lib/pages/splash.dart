@@ -10,6 +10,10 @@ import 'package:precious_tv/pages/home.dart';
 import 'package:precious_tv/services/serviceNetwork.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
+import '../network/_api.dart';
+import '../utils/constants.dart';
+
 
 
 class SplashScreen extends StatefulWidget {
@@ -38,6 +42,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
   bool isLoading = false;
   OtaEvent? currentEvent;
+  Api_client? api_client;
 
   Future<void> tryOtaUpdate() async {
     try {
@@ -64,9 +69,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     logger.i('message 200');
   }
   Future<void> getall() async {
-
     try {
-
       var response = await http
           .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/larts/json"))
           .timeout(const Duration(seconds: 10), onTimeout: () {
@@ -87,12 +90,13 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
         logger.i("guide url",dataUrl['ACAN_API'][0]['app_youtube_uid']);
         // model= AlauneModel.fromJson(jsonDecode(response.body));
       } else {
+
         return null;
       }
     } on TimeoutException catch (_) {
       //print("response time out");
       //navigationPage();\
-
+      Container(child: Text('test'),);
     }
   }
   Future<void> fetchApi() async {
@@ -135,6 +139,85 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
       isLoadingPlaylist = false;
     });
   }
+  Future<Api_client?> fetchConnexion() async {
+
+    try {
+      var postListUrl =
+      Uri.parse("https://acanvod.acan.group/myapiv2/listLiveRadios/larts/json");
+      final response = await http.get(postListUrl);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        //print(data);
+        setState(() {
+          api_client = Api_client.fromJson(jsonDecode(response.body));
+          //print(leral);
+        });
+
+        //print(leral.allitems[0].mesg);
+
+      }
+    } catch (error, stacktrace) {
+      internetProblem();
+
+      return Api_client.withError("Data not found / Connection issue");
+    }
+
+
+  }
+  Object internetProblem() {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ColorPalette.appBarColor,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(25.0))),
+        title: Text('Precious TV',
+            textAlign: TextAlign.center,style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 20,color: ColorPalette.appYellowColor),),
+        content:  Text(
+          "Problème d\'accès à Internet, veuillez vérifier votre connexion et réessayez !!!",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 18,color: ColorPalette.appYellowColor),
+        ),
+        actions: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext context) => const SplashScreen(
+
+                      )));
+
+                },
+                child: Container(
+                  width: 120,
+                  height: 50,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: ColorPalette.appYellowColor,
+                      borderRadius: BorderRadius.circular(35)),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(10),
+                  child: const Text(
+                    "Réessayer",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "CeraPro",
+                        fontWeight: FontWeight.normal,
+                        color: ColorPalette.appBarColor),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+
+  }
 
 
   @override
@@ -149,6 +232,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     tryOtaUpdate();
     //logger.i('message ghost',ytResult[0].title);
     startTime();
+    fetchConnexion();
   }
 
   startTime() async {

@@ -30,7 +30,7 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
     looping: false,
     fullScreenByDefault: false,
     allowedScreenSleep: false,
-    autoDetectFullscreenAspectRatio: true,
+    //autoDetectFullscreenAspectRatio: true,
     translations: [
       BetterPlayerTranslations(
         languageCode: "fr",

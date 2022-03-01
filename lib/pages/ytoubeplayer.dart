@@ -80,7 +80,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
     looping: false,
     fullScreenByDefault: false,
     allowedScreenSleep: false,
-    autoDetectFullscreenAspectRatio: true,
+    //autoDetectFullscreenAspectRatio: true,
     translations: [
       BetterPlayerTranslations(
         languageCode: "fr",
