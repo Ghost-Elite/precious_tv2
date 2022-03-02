@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
           dragStartBehavior: DragStartBehavior.start,
           children: [
             PreciousTvPage(dataUrl: widget.lien['allitems'][0]['feed_url'],ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist,dataToLoad: widget.dataToLoad,),
-            ReplayPage(ytResultPlaylist: widget.ytResultPlaylist,dataUrl: widget.lien['allitems'][0]['feed_url']),
+            ReplayPage(dataUrl: widget.lien['allitems'][0]['feed_url'],dataToLoad: widget.dataToLoad,),
             YoutubePages(ytResult: widget.ytResult,ytResultPlaylist: widget.ytResultPlaylist,ytApi: widget.ytApi,ytApiPlaylist: widget.ytApiPlaylist,)
 
           ],

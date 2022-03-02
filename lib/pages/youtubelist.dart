@@ -8,43 +8,18 @@ import 'dart:convert';
 import '../utils/constants.dart';
 import 'AllPlayListScreen.dart';
 import 'listVideoProg.dart';
-class ReplayPage extends StatefulWidget {
+class YoutubeListPage extends StatefulWidget {
 
-  var dataToLoad;
-  var dataUrl;
-  ReplayPage({Key? key,this.dataToLoad,this.dataUrl}) : super(key: key);
+  YoutubeListPage({Key? key,}) : super(key: key);
 
   @override
-  _ReplayPageState createState() => _ReplayPageState();
+  _YoutubeListPageState createState() => _YoutubeListPageState();
 }
 
-class _ReplayPageState extends State<ReplayPage> {
+class _YoutubeListPageState extends State<YoutubeListPage> {
   bool isLoading = true;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   GlobalKey<RefreshIndicatorState>();
-  var logger =Logger();
-  var data;
-  var datas,dataVOD;
-  Future<void> getDatas() async {
-    final response = await http.get(Uri.parse(widget.dataUrl));
-    datas = json.decode(response.body);
-    //getDirect(data['allitems'][0]['feed_url']);
-
-    //logger.i('Ghost-Elite',data['allitems'][0]['alaune_feed']);
-    getVODPrograms(datas['allitems'][0]['vod_feed']);
-
-    return datas;
-  }
-  Future<void> getVODPrograms(String url) async {
-    final response = await http.get(Uri.parse(url));
-    setState(() {
-      dataVOD = json.decode(response.body);
-    });
-    //getDirect(dataVOD['allitems'][0]['feed_url']);
-
-    //logger.i(' Ghost-Elite 2022 ',dataVOD['allitems']);
-    return dataVOD;
-  }
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
@@ -83,7 +58,6 @@ class _ReplayPageState extends State<ReplayPage> {
     ytApiPlaylist =
         YoutubeAPI(API_Key, maxResults: 50, type: "playlist");
     callAPI();
-    getDatas();
   }
 
   Future<void> _asyncFunctionAfterBuild() async {
@@ -95,19 +69,34 @@ class _ReplayPageState extends State<ReplayPage> {
   Widget build(BuildContext context) {
     _asyncFunctionAfterBuild();
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: ColorPalette.appBarColor,
+        elevation: 0,
+        centerTitle: true,
+        title: Container(
+          width: 100,
+          height: 19.0,
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/images/title.png')
+              )
+          ),
+        ),
+
+      ),
       key: _refreshIndicatorKey,
       body: makeItemEmissions(),
     );
   }
   Widget makeItemEmissions() {
     final orientation = MediaQuery.of(context).orientation;
-    return widget.dataToLoad=='youtube'? GridView.builder(
+    return GridView.builder(
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3),
       physics: ClampingScrollPhysics(),
       itemBuilder: (context, position) {
-        logger.i('ghost',ytResultPlaylist[position].thumbnail['high']['url']);
+
         return GestureDetector(
           onTap: (){
             Navigator.of(context).pushAndRemoveUntil(
@@ -153,11 +142,11 @@ class _ReplayPageState extends State<ReplayPage> {
                         width: MediaQuery.of(context).size.width,
                         height: 150,
                         decoration:  BoxDecoration(
-                          image: const DecorationImage(
-                            image: AssetImage('assets/images/carreImage.png'),
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.circular(10)
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/carreImage.png'),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(10)
                         ),
                       ),
                       Text(
@@ -181,85 +170,6 @@ class _ReplayPageState extends State<ReplayPage> {
         );
       },
       itemCount: ytResultPlaylist.length,
-    ):GridView.builder(
-      shrinkWrap: true,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3),
-      physics: ClampingScrollPhysics(),
-      itemBuilder: (context, position) {
-        //logger.i('ghost',widget.ytResultPlaylist[position].thumbnail['high']['url']);
-        return GestureDetector(
-          onTap: (){
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                    builder: (context) => ListVideoPrograms(
-                      urls: dataVOD['allitems'][position]['feed_url'],
-                      dataToLoad: widget.dataToLoad,
-                    )),
-                    (Route<dynamic> route) => true);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 150,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      ClipRRect(
-                        borderRadius:  BorderRadius.circular(10),
-                        child: Container(
-                          child: CachedNetworkImage(
-                            imageUrl: dataVOD['allitems'][position]['logo'],
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Image.asset(
-                              "assets/images/vignete.png",
-                              fit: BoxFit.cover,
-                            ),
-                            errorWidget: (context, url, error) => Image.asset(
-                              "assets/images/vignete.png",
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          height: 150,
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 150,
-                        decoration:  BoxDecoration(
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/carreImage.png'),
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
-                      ),
-                      Text(
-                        dataVOD['allitems'][position]['title'],
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        style: const TextStyle(
-                          color: ColorPalette.appColorWhite,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ],
-                  )
-
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-      itemCount:dataVOD==null?0: dataVOD['allitems'].length,
     );
   }
 }

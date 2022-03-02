@@ -93,6 +93,8 @@ class _DrawerPageState extends State<DrawerPage> {
                     ytApi: widget.ytApi,
                     logger: widget.logger,
                     lien: widget.lien,
+                    dataToLoad: widget.dataToLoad,
+
 
                   ),
                   ),
@@ -115,7 +117,6 @@ class _DrawerPageState extends State<DrawerPage> {
                       ytApi: widget.ytApi,
                       logger: widget.logger,
                       lien: widget.lien,
-
                     ),
                     ),
                         (Route<dynamic> route) => false,

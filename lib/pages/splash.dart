@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   Future<void> getall() async {
     try {
       var response = await http
-          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/larts/json"))
+          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/labeltv/json"))
           .timeout(const Duration(seconds: 10), onTimeout: () {
 
         throw TimeoutException("connection time out try agian");
@@ -143,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
 
     try {
       var postListUrl =
-      Uri.parse("https://acanvod.acan.group/myapiv2/listLiveRadios/larts/json");
+      Uri.parse("https://acanvod.acan.group/myapiv2/appdetails/larts");
       final response = await http.get(postListUrl);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -174,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
         title: Text('Precious TV',
             textAlign: TextAlign.center,style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 20,color: ColorPalette.appYellowColor),),
         content:  Text(
-          "Problème d\'accès à Internet, veuillez vérifier votre connexion et réessayez !!!",
+          "Internet access problem, please check your connection and try again !!!",
           textAlign: TextAlign.center,
           style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 18,color: ColorPalette.appYellowColor),
         ),

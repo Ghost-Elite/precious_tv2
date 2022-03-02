@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:precious_tv/pages/youtubelist.dart';
 import 'package:precious_tv/pages/ytoubeplayer.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
@@ -11,6 +12,7 @@ import '../configs/size_config.dart';
 import '../utils/constants.dart';
 import 'AllPlayListScreen.dart';
 import 'package:logger/logger.dart';
+import 'package:jiffy/jiffy.dart';
 class YoutubePages extends StatefulWidget {
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
@@ -88,7 +90,11 @@ class _YoutubePagesState extends State<YoutubePages>{
           ),
 
 
-        );
+        )..listen((value) {
+          if (value.isReady && !value.hasPlayed) {
+            _controller!.hideTopMenu();
+          }
+        });
 
         _controller!.onEnterFullscreen = () {
           SystemChrome.setPreferredOrientations([
@@ -98,7 +104,14 @@ class _YoutubePagesState extends State<YoutubePages>{
 
         };
         _controller!.onExitFullscreen = () {
-
+          SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+          Future.delayed(const Duration(seconds: 1), () {
+            _controller!.play();
+          });
+          Future.delayed(const Duration(seconds: 5), () {
+            SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+          });
+          logger.i('Exited Fullscreen');
         };
       });
     });
@@ -238,8 +251,8 @@ class _YoutubePagesState extends State<YoutubePages>{
                             if(widget.ytResultPlaylist !=null || widget.ytResultPlaylist==0){
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                    builder: (context) => AllPlayListScreen(
-                                      ytResult:widget.ytResultPlaylist[0],
+                                    builder: (context) => YoutubeListPage(
+
                                       //apikey: API_Key,
                                     ),
                                   ),
@@ -496,16 +509,18 @@ class _YoutubePagesState extends State<YoutubePages>{
                           ),
                         ),
                         SizedBox(height: 3,),
-                        /*Container(
-                          margin: EdgeInsets.all(5),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          alignment: Alignment.topLeft,
+                          //margin: EdgeInsets.all(5),
                           child: Text(
-                            '${widget.ytResult[index].description}',
-                            style: GoogleFonts.roboto(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 13.0,),maxLines: 2,
+                            '${Jiffy(widget.ytResult[index].publishedAt,
+                                "yyyy-MM-ddTHH:mm:ssZ").format("dd/MM/yyyy to HH:mm")} ',
+                            style: GoogleFonts.poppins(
+                                fontSize: 9.0,color: ColorPalette.appColorGrey),maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        )*/
+                        )
                       ],
                     ),
                   )

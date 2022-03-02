@@ -19,7 +19,7 @@ import 'AllPlayListScreen.dart';
 import 'drawerReplay.dart';
 import 'lecteurDesEmission.dart';
 import 'listVideoProg.dart';
-
+import 'package:jiffy/jiffy.dart';
 class PreciousTvPage extends StatefulWidget {
   var dataUrl;
   var dataToLoad;
@@ -604,16 +604,19 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
                           ),
                         ),
                         SizedBox(height: 3,),
-                        /*Container(
-                          margin: EdgeInsets.all(5),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          alignment: Alignment.topLeft,
+                          //margin: EdgeInsets.all(5),
                           child: Text(
-                            '${widget.ytResult[index].description}',
-                            style: GoogleFonts.roboto(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 13.0,),maxLines: 2,
+                            '${Jiffy(widget.ytResult[index].publishedAt,
+                                "yyyy-MM-ddTHH:mm:ssZ").format("dd/MM/yyyy à HH:mm")} ',
+                            style: GoogleFonts.poppins(
+                                fontSize: 9.0,color: ColorPalette.appColorGrey),maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        )*/
+                        )
+
                       ],
                     ),
                   )
