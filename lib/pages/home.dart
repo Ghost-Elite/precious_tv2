@@ -13,7 +13,6 @@ import 'drawerPage.dart';
 import 'package:logger/logger.dart';
 import 'package:youtube_api/youtube_api.dart';
 import 'package:better_player/better_player.dart';
-
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
   var appdescription,appfburl;
@@ -128,6 +127,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
   }
 
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -142,7 +142,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
         });
       },
     );
+
   }
+
   Future<void> _asyncFunctionAfterBuild() async {
     setState(() {
       print("check if i'm printed several times!");

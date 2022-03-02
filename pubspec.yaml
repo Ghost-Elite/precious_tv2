@@ -58,7 +58,7 @@ dev_dependencies:
   get: ^4.6.1
   bubble_tab_indicator: ^0.1.6
   youtube_player_flutter: ^8.0.0
-  upgrader: ^3.13.0
+
   youtube_api:
     path: youtube_api-0.8.0/
   youtube_api_v3:
