@@ -7,7 +7,7 @@ import 'package:precious_tv/pages/splash.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'configs/size_config.dart';
-import 'package:ota_update/ota_update.dart';
+
 /*class MyHttpOverrides extends HttpOverrides{
   @override
   HttpClient createHttpClient(SecurityContext context){

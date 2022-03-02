@@ -91,11 +91,11 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
 
     logger.i(' Ghost-Elite 2022 ',data['video_url']);
     iniPlayerYoutube(data['video_url']);
-    /*if (widget.onPlay == "vod") {
+    if (widget.dataToLoad == "vod") {
       getInitPlayer(data['video_url']);
     } else {
-      iniPlayerYoutube(data['video_url']);
-    }*/
+      getInitPlayers(widget.videoUrl);
+    }
     return data;
   }
   Future<void> getVODEmissions() async {
@@ -110,6 +110,21 @@ class _LecteurDesEmissionsState extends State<LecteurDesEmissions> {
   }
 
   getInitPlayer(String url) {
+    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network, url,
+      liveStream: false,
+      asmsTrackNames: ["3G 360p", "SD 480p", "HD 1080p"],
+    );
+    if (betterPlayerController != null) {
+      betterPlayerController!.pause();
+      betterPlayerController!.setupDataSource(betterPlayerDataSource);
+    } else {
+      betterPlayerController = BetterPlayerController(betterPlayerConfiguration,
+          betterPlayerDataSource: betterPlayerDataSource);
+    }
+    betterPlayerController!.setBetterPlayerGlobalKey(_betterPlayerKey1);
+  }
+  getInitPlayers(String url) {
     BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network, url,
       liveStream: false,
