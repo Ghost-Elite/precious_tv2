@@ -123,15 +123,14 @@ class _YoutubePagesState extends State<YoutubePages>{
     // TODO: implement dispose
     super.dispose();
     _controller!.close();
-
-    //_controller==null;
+    _controller==null;
 
   }
   @override
   void deactivate() {
     // Pauses video while navigating to next page.
     _controller!.pause();
-    //_controller==null;
+    _controller==null;
     super.deactivate();
   }
   Future<void> _asyncFunctionAfterBuild() async {

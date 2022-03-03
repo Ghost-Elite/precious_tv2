@@ -12,6 +12,7 @@ import 'aboutPage.dart';
 import 'drawerReplay.dart';
 import 'home.dart';
 import 'package:http/http.dart' as http;
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'dart:convert';
 import 'package:logger/logger.dart';
 import 'package:youtube_api/youtube_api.dart';
@@ -27,7 +28,8 @@ class DrawerPage extends StatefulWidget {
   YT_APIPlaylist? ytResults;
   var dataUrl;
   var dataToLoad;
-  DrawerPage({Key? key,this.appfburl,this.appdescription,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl,this.dataToLoad,this.urlPrevacy}) : super(key: key);
+  YoutubePlayerController? controller;
+  DrawerPage({Key? key,this.controller,this.appfburl,this.appdescription,this.lien,required this.logger,this.ytApiPlaylist,this.ytApi,required this.ytResultPlaylist,required this.ytResult,this.ytResults,this.dataUrl,this.dataToLoad,this.urlPrevacy}) : super(key: key);
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -155,8 +157,9 @@ class _DrawerPageState extends State<DrawerPage> {
                 },
               ),
             ),
-            GestureDetector(
+            ListTile(
               onTap: (){
+                //widget.controller!.pause();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => DrawerReplay(
@@ -168,8 +171,33 @@ class _DrawerPageState extends State<DrawerPage> {
 
                 );
               },
-              child: ListTile(
-                leading: IconButton(
+              leading: GestureDetector(
+                onTap: (){
+                  //widget.controller!.pause();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DrawerReplay(
+                      ytResultPlaylist: widget.ytResultPlaylist,
+                      urls: dataVOD,
+                      dataToLoad: widget.dataToLoad,
+                    ),
+                    ),
+
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.only(left: 10),
+                  width: SizeConfi.screenWidth!/8,
+                  height: 44,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('assets/images/replayer.png')
+                      )
+                  ),
+                ),
+              )
+
+              /*IconButton(
                   icon: const FaIcon(
                     FontAwesomeIcons.tv,
                     size: 24,
@@ -177,29 +205,29 @@ class _DrawerPageState extends State<DrawerPage> {
                   ), onPressed: () {
 
                 },
+                )*/,
+              title:  Text(
+                "Replay TV",
+                style: GoogleFonts.roboto(
+                    color: ColorPalette.appColorWhite,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12
                 ),
-                title:  Text(
-                  "Replay TV",
-                  style: GoogleFonts.roboto(
-                      color: ColorPalette.appColorWhite,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12
-                  ),
+              ),
+              trailing: IconButton(
+                icon: const FaIcon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 17,
+                    color: ColorPalette.appColorWhite
                 ),
-                trailing: IconButton(
-                  icon: const FaIcon(
-                      FontAwesomeIcons.chevronRight,
-                      size: 17,
-                      color: ColorPalette.appColorWhite
-                  ),
-                  onPressed: () {
+                onPressed: () {
 
-                  },
-                ),
+                },
               ),
             ),
             ListTile(
               onTap: (){
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => YoutubeVideoPlayList(
@@ -216,7 +244,17 @@ class _DrawerPageState extends State<DrawerPage> {
                   size: 28,
                   color: ColorPalette.appColorWhite,
                 ),
-                onPressed: () { },
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => YoutubeVideoPlayList(
+
+
+                    ),
+                    ),
+
+                  );
+                },
               ),
               title:  Text(
                 "YouTube",
@@ -257,7 +295,7 @@ class _DrawerPageState extends State<DrawerPage> {
                       size: 28,
                       color: ColorPalette.appColorWhite,
                     ),
-                    onPressed: (){},
+                    onPressed: ()=>_launchURL(),
                   ),
                   title:  Text(
                     "Facebook",
@@ -296,7 +334,16 @@ class _DrawerPageState extends State<DrawerPage> {
                     size: 28,
                     color: ColorPalette.appColorWhite,
                   ),
-                  onPressed: () { },
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PrevacyPage(
+                        urlPrevacy: widget.urlPrevacy,
+                      ),
+                      ),
+
+                    );
+                  },
                 ),
                 title:  Text(
                   "privacy policy",
@@ -335,7 +382,16 @@ class _DrawerPageState extends State<DrawerPage> {
                     size: 28,
                     color: ColorPalette.appColorWhite,
                   ),
-                  onPressed: () { },
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AboutPage(
+                        appdescription: widget.appdescription,
+                      ),
+                      ),
+
+                    );
+                  },
                 ),
                 title:  Text(
                   "About",

@@ -15,6 +15,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:better_player/better_player.dart';
 import '../configs/size_config.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:better_player/better_player.dart';
 import 'package:http/http.dart' as http;
 
@@ -300,7 +301,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
                     ),
                     videoSimilaire(),
                     Expanded(
-                        child: makeItemEpecial(),
+                        child: listVideos(),
                     )
                   ],
                 ),
@@ -388,6 +389,126 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
           ],
         );
       }),
+    );
+  }
+  Widget listVideos(){
+    return ListView.builder(
+
+      itemCount: widget.ytResult.length,
+      itemBuilder: (BuildContext context, int index) {
+        return GestureDetector(
+          onTap: (){
+            setState(() {
+              uri = widget.ytResult[index].url;
+              //lien = widget.ytResult[index].url;
+            });
+            _controller.load(widget.ytResult[index].url.split("=")[1]);
+            tite = widget.ytResult[index].title;
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 1,bottom: 3),
+            child: Container(
+              width: SizeConfi.screenWidth,
+              height: 70,
+              decoration: const BoxDecoration(
+                color: ColorPalette.appColorWhite,
+                boxShadow: [
+                  BoxShadow(
+                      color: ColorPalette.appColorDivider,
+                      spreadRadius: 0,
+                      blurRadius: 0,
+                      offset: Offset(0, 1)
+                  ),
+
+                ],
+              ),
+              child: Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 70,
+                        child: ClipRRect(
+                          clipBehavior: Clip.antiAlias,
+                          borderRadius: BorderRadius.circular(5),
+                          child: CachedNetworkImage(
+                            width: 100,
+                            height: 70,
+                            imageUrl: widget.ytResult[index].thumbnail["medium"]["url"],
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Image.asset(
+                                  "assets/images/vignete.png",
+                                  width: 100,height: 70,fit: BoxFit.cover,
+                                ),
+                            errorWidget: (context, url, error) =>
+                                Image.asset(
+                                  "assets/images/vignete.png",width: 100,height: 70,fit: BoxFit.cover,
+                                ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 100,
+                        height: 70,
+                        decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage('assets/images/carreImage.png'),
+                                fit: BoxFit.cover
+                            )
+                        ),
+                      ),
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage('assets/images/play.png')
+                            )
+                        ),
+                      )
+                    ],
+                  ),
+                  Flexible(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(5),
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            '${widget.ytResult[index].title}',
+                            style: GoogleFonts.roboto(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,color: ColorPalette.appBarColor
+                            ),maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(height: 3,),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          alignment: Alignment.topLeft,
+                          //margin: EdgeInsets.all(5),
+                          child: Text(
+                            '${Jiffy(widget.ytResult[index].publishedAt,
+                                "yyyy-MM-ddTHH:mm:ssZ").format("dd/MM/yyyy à HH:mm")} ',
+                            style: GoogleFonts.poppins(
+                                fontSize: 9.0,color: ColorPalette.appColorGrey),maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )
+
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
   Widget makeItemEpecial() {

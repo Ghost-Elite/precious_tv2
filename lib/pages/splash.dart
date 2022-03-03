@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   String API_Key = 'AIzaSyDNYc6e906fgd6ZkRY63aMLCSQS0trbsew';
   String API_CHANEL = 'UCcdz74VEvkzA71PeLYMyA_g';
   bool isLoading = false;
-
+  var keyYoutube;
   Api_client? api_client;
 
 
@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   Future<void> getall() async {
     try {
       var response = await http
-          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/larts/json"))
+          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/albayanetv/json"))
           .timeout(const Duration(seconds: 10), onTimeout: () {
 
         throw TimeoutException("connection time out try agian");
@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
         fetchApi();
 
 
-        logger.i("guide url",dataUrl['ACAN_API'][0]['app_youtube_uid']);
+        logger.i("guide url",dataUrl['ACAN_API'][0]['app_google_apikey']);
         // model= AlauneModel.fromJson(jsonDecode(response.body));
       } else {
 
@@ -181,7 +181,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
                   padding: const EdgeInsets.all(10),
                   margin: const EdgeInsets.all(10),
                   child:  Text(
-                    "Réessayer",
+                    "Try again",
                     textAlign: TextAlign.start,
                     style: GoogleFonts.poppins(fontWeight: FontWeight.bold,fontSize: 16,color: ColorPalette.appBarColor),
                   ),
@@ -200,18 +200,21 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
   void initState() {
     // TODO: implement initState
     super.initState();
+
     ytApi = YoutubeAPI(API_Key, maxResults: 50, type: "video");
     ytApiPlaylist = YoutubeAPI(API_Key, maxResults: 50, type: "playlist");
     getall();
     callAPI();
-    callAPIPlaylist();
+    //callAPIPlaylist();
     //logger.i('message ghost',ytResult[0].title);
     startTime();
     fetchConnexion();
+
   }
 
   startTime() async {
     var _duration = const Duration(seconds: 5);
+
     return Timer(_duration, navigationPage);
   }
   @override

@@ -12,18 +12,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'drawerPage.dart';
 import 'package:logger/logger.dart';
 import 'package:youtube_api/youtube_api.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:better_player/better_player.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 class HomePage extends StatefulWidget {
   var appdescription,appfburl;
   var lien,urlPrevacy;
   var logger=Logger();
+  YoutubePlayerController? controller;
   var dataToLoad;
   YoutubeAPI? ytApi;
   YoutubeAPI? ytApiPlaylist;
   List<YT_API> ytResult = [];
   List<YT_APIPlaylist> ytResultPlaylist = [];
-  HomePage({Key? key,this.appfburl,this.appdescription,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist,this.dataToLoad,this.urlPrevacy}) : super(key: key);
+  HomePage({Key? key,this.controller,this.appfburl,this.appdescription,this.lien,required this.logger,this.ytApi,required this.ytResult,required this.ytResultPlaylist,this.ytApiPlaylist,this.dataToLoad,this.urlPrevacy}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -35,7 +37,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
   GlobalKey _betterPlayerKey = GlobalKey();
   GlobalKey _scaffoldKey = GlobalKey();
   BetterPlayerController? betterPlayerController;
-
+  YoutubePlayerController? _controller;
   late var betterPlayerConfiguration = BetterPlayerConfiguration(
     autoPlay: true,
     looping: false,
@@ -78,6 +80,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
       //overflowModalColor: Colors.amberAccent
     ),
   );
+
   var scaffold = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> _productKey = GlobalKey<FormState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -220,6 +223,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin,
           urlPrevacy: widget.urlPrevacy,
           appdescription: widget.appdescription,
           appfburl: widget.appfburl,
+          controller: widget.controller,
         ),
         appBar: AppBar(
           backgroundColor: ColorPalette.appBarColor,

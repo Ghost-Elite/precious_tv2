@@ -9,6 +9,7 @@ class Assets {
   static const String imagesPlay = 'assets/images/play.png';
   static const String imagesReactHeader = 'assets/images/reactHeader.png';
   static const String imagesRectImage = 'assets/images/rectImage.png';
+  static const String imagesReplayer = 'assets/images/replayer.png';
   static const String imagesSplashScreen = 'assets/images/SplashScreen.png';
   static const String imagesTitle = 'assets/images/title.png';
   static const String imagesVignete = 'assets/images/vignete.png';
