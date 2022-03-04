@@ -4,11 +4,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
    <application
-        android:label="precious_tv"
+        android:label="Precious TV"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true"

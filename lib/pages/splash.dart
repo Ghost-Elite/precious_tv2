@@ -10,6 +10,7 @@ import 'package:precious_tv/services/serviceNetwork.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:retry/retry.dart';
 import '../network/_api.dart';
 import '../utils/constants.dart';
 
@@ -103,6 +104,42 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
       }
     }catch(error, stacktrace){
 
+    }
+  }
+  Future<void> retryMethode() async {
+    // Create an HttpClient.
+    final client = HttpClient();
+
+    try {
+      // Get statusCode by retrying a function
+      final statusCode = await retry(
+            () async {
+          // Make a HTTP request and return the status code.
+          final request = await client
+              .getUrl(Uri.parse('https://www.google.com'))
+              .timeout(Duration(seconds: 5));
+          final response = await request.close().timeout(Duration(seconds: 5));
+          await response.drain();
+          return response.statusCode;
+        },
+        // Retry on SocketException or TimeoutException
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+
+      // Print result from status code
+      if (statusCode == 200) {
+        logger.i('google.com is running');
+        fetchApi();
+        callAPI();
+      } else {
+        logger.i('google.com is not availble...');
+      }
+    } finally {
+      // Always close an HttpClient from dart:io, to close TCP connections in the
+      // connection pool. Many servers has keep-alive to reduce round-trip time
+      // for additional requests and avoid that clients run out of port and
+      // end up in WAIT_TIME unpleasantries...
+      client.close();
     }
   }
   Future<void> callAPI() async {
@@ -211,8 +248,9 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
 
     ytApi = YoutubeAPI(API_Key, maxResults: 50, type: "video");
     ytApiPlaylist = YoutubeAPI(API_Key, maxResults: 50, type: "playlist");
+    retryMethode();
     getall();
-    callAPI();
+
     //callAPIPlaylist();
     //logger.i('message ghost',ytResult[0].title);
     startTime();
