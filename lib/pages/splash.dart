@@ -49,9 +49,10 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     logger.i('message 200');
   }
   Future<void> getall() async {
+    bool loadRemoteDatatSucceed = false;
     try {
       var response = await http
-          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/albayanetv/json"))
+          .get(Uri.parse("https://tveapi.acan.group/myapiv2/appdetails/larts/json"))
           .timeout(const Duration(seconds: 10), onTimeout: () {
 
         throw TimeoutException("connection time out try agian");
@@ -65,19 +66,26 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
           dataUrl = jsonDecode(response.body);
         });
         fetchApi();
-
+        loadRemoteDatatSucceed = true;
 
         logger.i("guide url",dataUrl['ACAN_API'][0]['app_google_apikey']);
         // model= AlauneModel.fromJson(jsonDecode(response.body));
       } else {
 
+        if(loadRemoteDatatSucceed ==false)retryFuture(getall, 2000);
+        logger.i('message',loadRemoteDatatSucceed);
         return null;
       }
+
     } on TimeoutException catch (_) {
-      //print("response time out");
-      //navigationPage();\
-      Container(child: Text('test'),);
     }
+
+  }
+  retryFuture(future, delay) {
+    Future.delayed(Duration(milliseconds: delay), () {
+      future();
+
+    });
   }
   Future<void> fetchApi() async {
     try{
@@ -209,6 +217,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     //logger.i('message ghost',ytResult[0].title);
     startTime();
     fetchConnexion();
+    retryFuture(getall, 2000);
 
   }
 

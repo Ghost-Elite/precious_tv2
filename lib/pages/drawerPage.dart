@@ -187,7 +187,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 },
                 child: Container(
                   padding: EdgeInsets.only(left: 10),
-                  width: SizeConfi.screenWidth!/8,
+                  width: SizeConfi.screenWidth!/9,
                   height: 44,
                   decoration: BoxDecoration(
                       image: DecorationImage(

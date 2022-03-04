@@ -284,7 +284,7 @@ class _YoutubeVideoPlayListState extends State<YoutubeVideoPlayList>
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
+          maxCrossAxisExtent: 210,
           //childAspectRatio: 4 / 2,
           crossAxisSpacing: 8,
           mainAxisSpacing: 10),

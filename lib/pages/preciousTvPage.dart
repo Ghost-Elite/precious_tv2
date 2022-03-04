@@ -17,9 +17,11 @@ import 'package:better_player/better_player.dart';
 import '../configs/size_config.dart';
 import 'AllPlayListScreen.dart';
 import 'drawerReplay.dart';
+import 'dart:io';
 import 'lecteurDesEmission.dart';
 import 'listVideoProg.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:retry/retry.dart';
 class PreciousTvPage extends StatefulWidget {
   var dataUrl;
   var dataToLoad;
@@ -110,7 +112,43 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
         datas;
       });
     }
-    PlayerInit(datas['direct_url']);
+    initPlayer(datas['direct_url']);
+  }
+
+  Future<void> retryMethode() async {
+    // Create an HttpClient.
+    final client = HttpClient();
+
+    try {
+      // Get statusCode by retrying a function
+      final statusCode = await retry(
+            () async {
+          // Make a HTTP request and return the status code.
+          final request = await client
+              .getUrl(Uri.parse('https://www.google.com'))
+              .timeout(Duration(seconds: 5));
+          final response = await request.close().timeout(Duration(seconds: 5));
+          await response.drain();
+          return response.statusCode;
+        },
+        // Retry on SocketException or TimeoutException
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+
+      // Print result from status code
+      if (statusCode == 200) {
+        logger.i('google.com is running');
+        getData();
+      } else {
+        logger.i('google.com is not availble...');
+      }
+    } finally {
+      // Always close an HttpClient from dart:io, to close TCP connections in the
+      // connection pool. Many servers has keep-alive to reduce round-trip time
+      // for additional requests and avoid that clients run out of port and
+      // end up in WAIT_TIME unpleasantries...
+      client.close();
+    }
   }
   void PlayerInit(String url){
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
@@ -202,7 +240,7 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
       BetterPlayerDataSourceType.network,
       directUrl,
       liveStream: true,
-      //asmsTrackNames: ["3G 360p", "SD 480p", "HD 1080p"],
+      asmsTrackNames: ["3G 360p", "SD 480p", "HD 1080p"],
       /*notificationConfiguration: BetterPlayerNotificationConfiguration(
             showNotification: true,
             title: tvTitle,
@@ -218,14 +256,23 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
           betterPlayerDataSource: betterPlayerDataSource);
     }
     betterPlayerController!.setBetterPlayerGlobalKey(_betterPlayerKey);
+
   }
 
 
   @override
   void initState() {
     // TODO: implement initState
-    betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    getData();
+    betterPlayerController = BetterPlayerController(betterPlayerConfiguration)..addEventsListener((error) => {
+      if(error.betterPlayerEventType.index==9){
+        logger.i(error.betterPlayerEventType.index,"index event"),
+        retryMethode(),
+
+        betterPlayerController!.retryDataSource()
+      }
+    });
+
+    retryMethode();
     super.initState();
 
 

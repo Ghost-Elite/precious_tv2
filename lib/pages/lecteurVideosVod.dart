@@ -194,7 +194,7 @@ class _LecteurVideosState extends State<LecteurVideos> {
                     child: Column(
                       children: <Widget>[
                         SizedBox(
-                          height: 83,
+                          height: 93,
                         ),
                         Container(
                           width: double.infinity,
@@ -265,7 +265,7 @@ class _LecteurVideosState extends State<LecteurVideos> {
                       child: Column(
                         children: <Widget>[
                           SizedBox(
-                            height: 83,
+                            height: 93,
                           ),
                           Container(
                             width: double.infinity,
@@ -291,8 +291,8 @@ class _LecteurVideosState extends State<LecteurVideos> {
 
   Widget player() {
     return Container(
-      width: double.infinity,
-      height: 200,
+      width: SizeConfi.screenWidth,
+      height: 190,
       color: Colors.black,
       child: Center(
         child: Stack(
@@ -314,8 +314,8 @@ class _LecteurVideosState extends State<LecteurVideos> {
 
   Widget playerYoutube() {
     return Container(
-      height: 230,
-      width: double.infinity,
+      width: SizeConfi.screenWidth,
+      height: 190,
       child: YoutubePlayer(
         controller: _controller!,
         showVideoProgressIndicator: true,

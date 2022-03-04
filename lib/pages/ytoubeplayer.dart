@@ -244,7 +244,8 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    logger.i(' message 2022',widget.related);
+    logger.i(' message 2022',Jiffy(widget.ytResult[0].publishedAt,
+        "yyyy-MM-ddTHH:mm:ssZ").format("dd/MM/yyyy a HH:mm"));
     Wakelock.enable();
     return YoutubePlayerBuilder(
       player: YoutubePlayer(
@@ -289,10 +290,11 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
                 child: Column(
                   children: <Widget>[
                     const SizedBox(
-                      height: 90,
+                      height: 95,
                     ),
                     Container(
-                      width: double.infinity,
+                      width: SizeConfi.screenWidth,
+                      height: 190,
                       child: player,
                     ),
                     card(),
@@ -393,7 +395,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
   }
   Widget listVideos(){
     return ListView.builder(
-
+      padding: EdgeInsets.only(top: 10),
       itemCount: widget.ytResult.length,
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
@@ -493,7 +495,7 @@ class _YtoubePlayerPageState extends State<YtoubePlayerPage> {
                           //margin: EdgeInsets.all(5),
                           child: Text(
                             '${Jiffy(widget.ytResult[index].publishedAt,
-                                "yyyy-MM-ddTHH:mm:ssZ").format("dd/MM/yyyy à HH:mm")} ',
+                                "yyyy-MM-ddTHH:mm:ssZ").format("dd/MM/yyyy a HH:mm")} ',
                             style: GoogleFonts.poppins(
                                 fontSize: 9.0,color: ColorPalette.appColorGrey),maxLines: 2,
                             overflow: TextOverflow.ellipsis,

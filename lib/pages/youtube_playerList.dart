@@ -174,8 +174,8 @@ class _youtubeplayerListPageState extends State<youtubeplayerListPage> {
                                     children: [
                                       GestureDetector(
                                         child: Container(
-                                          width: 140,
-                                          height: 110,
+                                          width: 150,
+                                          height: 100,
                                           decoration: BoxDecoration(
                                             color: Colors.transparent,
                                             borderRadius: BorderRadius.circular(10),
