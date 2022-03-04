@@ -219,6 +219,9 @@ class _PreciousTvPageState extends State<PreciousTvPage> {
           case InternetConnectionStatus.connected:
           // ignore: avoid_print
             logger.i('Data connection is available.');
+            Container(
+              child: Text(' connexion '),
+            );
             break;
           case InternetConnectionStatus.disconnected:
           // ignore: avoid_print

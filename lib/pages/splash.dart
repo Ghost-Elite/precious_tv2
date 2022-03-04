@@ -10,6 +10,7 @@ import 'package:precious_tv/services/serviceNetwork.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:retry/retry.dart';
 import '../network/_api.dart';
 import '../utils/constants.dart';
@@ -239,6 +240,50 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     );
 
   }
+  Future<void> test() async {
+    // Simple check to see if we have Internet
+    // ignore: avoid_print
+    logger.i('''The statement 'this machine is connected to the Internet' is: ''');
+    final bool isConnected = await InternetConnectionChecker().hasConnection;
+    // ignore: avoid_print
+    logger.i(
+      isConnected.toString(),
+    );
+    // returns a bool
+
+    // We can also get an enum instead of a bool
+    // ignore: avoid_print
+    logger.i(
+        'Current status: ${await InternetConnectionChecker().connectionStatus}');
+    // Prints either InternetConnectionStatus.connected
+    // or InternetConnectionStatus.disconnected
+
+    // actively listen for status updates
+    final StreamSubscription<InternetConnectionStatus> listener =
+    InternetConnectionChecker().onStatusChange.listen(
+          (InternetConnectionStatus status) {
+        switch (status) {
+          case InternetConnectionStatus.connected:
+          // ignore: avoid_print
+            logger.i('Data connection is available.');
+            Container(
+              child: Text(' connexion '),
+            );
+            break;
+          case InternetConnectionStatus.disconnected:
+          // ignore: avoid_print
+            logger.i('You are disconnected from the internet.');
+            break;
+        }
+      },
+    );
+
+    // close listener after 30 seconds, so the program doesn't run forever
+    await Future<void>.delayed(
+        const Duration(seconds: 10),
+    );
+    await listener.cancel();
+  }
 
 
   @override
@@ -256,6 +301,7 @@ class _SplashScreenState extends State<SplashScreen>  with AutomaticKeepAliveCli
     startTime();
     fetchConnexion();
     retryFuture(getall, 2000);
+    test();
 
   }
 
